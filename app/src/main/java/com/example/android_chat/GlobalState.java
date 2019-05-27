@@ -63,7 +63,8 @@ public class GlobalState extends Application {
         if (qs != null)
         {
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-            String urlData = prefs.getString("urlData","http://10.0.2.2/android_chat/data.php");
+            //String urlData = prefs.getString("urlData","http://10.0.2.2/android_chat/data.php");
+            String urlData = "http://chaire-ecommerce.ec-lille.fr/ime5/data.php";
 
             try {
                 URL url = new URL(urlData + "?" + qs);
