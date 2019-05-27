@@ -1,5 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_margin="8sp"
@@ -7,15 +7,14 @@
     android:layout_marginTop="8sp"
     android:layout_marginRight="8sp"
     android:layout_marginBottom="8sp"
-    android:gravity="center_horizontal|right"
+    android:gravity="right|center_horizontal"
     android:orientation="vertical">
 
     <TextView
-        android:id="@+id/login_titre"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
-        android:text="@string/app_name"
+        android:text="Inscription"
         android:textSize="48sp" />
 
     <android.support.design.widget.TextInputLayout
@@ -24,7 +23,7 @@
         android:hint="Identifiant">
 
         <android.support.design.widget.TextInputEditText
-            android:id="@+id/login_edtLogin"
+            android:id="@+id/signup_edtLogin"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8sp"
@@ -41,7 +40,7 @@
         android:hint="Mot de Passe">
 
         <android.support.design.widget.TextInputEditText
-            android:id="@+id/login_edtPasse"
+            android:id="@+id/signup_edtPass"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8sp"
@@ -53,38 +52,9 @@
         </android.support.design.widget.TextInputEditText>
     </android.support.design.widget.TextInputLayout>
 
-    <CheckBox
-        android:id="@+id/login_cbRemember"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Se souvenir de moi" />
-
     <Button
-        android:id="@+id/login_btnOK"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:enabled="false"
-        android:text="Connexion" />
-
-    <TextView
-        android:id="@+id/login_progressText"
+        android:id="@+id/signup_btnSubmit"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text=""
-        android:textColor="@android:color/secondary_text_light" />
-
-    <ProgressBar
-        android:id="@+id/login_progressBar"
-        style="?android:attr/progressBarStyleHorizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:visibility="invisible" />
-
-    <Button
-        android:id="@+id/login_btnSignup"
-        style="@style/Widget.MaterialComponents.Button.TextButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Créer un Compte" />
-
+        android:text="S'Inscrire" />
 </LinearLayout>

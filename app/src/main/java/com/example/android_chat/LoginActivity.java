@@ -26,6 +26,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private CheckBox champRemember;
     private GlobalState gs;
     private Button btnOK;
+    private Button btnSignup;
 
     /***** Gestion de l'état de l'activité ****/
     @Override
@@ -38,9 +39,11 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         champPass = findViewById(R.id.login_edtPasse);
         champRemember = findViewById(R.id.login_cbRemember);
         btnOK = findViewById(R.id.login_btnOK);
+        btnSignup = findViewById(R.id.login_btnSignup);
 
         champRemember.setOnClickListener(this);
         btnOK.setOnClickListener(this);
+        btnSignup.setOnClickListener(this);
     }
 
     @Override
@@ -128,10 +131,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         switch (v.getId()) {
             case R.id.login_cbRemember :
                 savePrefs();
-            break;
+                break;
 
             case R.id.login_btnOK :
-
                 String login = champLogin.getText().toString();
                 String passe = champPass.getText().toString();
 
@@ -161,6 +163,10 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                         }
                     });
                 }
+                break;
+                
+            case R.id.login_btnSignup:
+                startActivity(new Intent(this, SignupActivity.class));
                 break;
         }
     }
