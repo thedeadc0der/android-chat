@@ -20,6 +20,7 @@ package="com.example.android_chat">
     <activity android:name=".LoginActivity">
         <intent-filter>
             <action android:name="android.intent.action.MAIN" />
+        <activity android:name=".SignupActivity"></activity>
 
             <category android:name="android.intent.category.LAUNCHER" />
         </intent-filter>

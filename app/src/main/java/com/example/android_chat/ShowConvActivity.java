@@ -55,7 +55,7 @@ public class ShowConvActivity extends RestActivity implements View.OnClickListen
 
                     TextView tv = new TextView(this);
                     tv.setText("[" + auteur + "] " + contenu);
-                    tv.setTextColor(Color.parseColor(couleur));
+//                    tv.setTextColor(Color.parseColor(couleur));
 
                     msgLayout.addView(tv);
 

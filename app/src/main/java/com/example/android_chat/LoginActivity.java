@@ -25,6 +25,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     CheckBox champRemember;
     GlobalState gs;
     Button btnOK;
+    Button btnSignup;
 
     class JSONAsyncTask extends AsyncTask<String, Void, JSONObject> {
         // Params, Progress, Result
@@ -90,10 +91,11 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         champPass = findViewById(R.id.login_edtPasse);
         champRemember = findViewById(R.id.login_cbRemember);
         btnOK = findViewById(R.id.login_btnOK);
+        btnSignup = findViewById(R.id.login_btnSignup);
 
         champRemember.setOnClickListener(this);
         btnOK.setOnClickListener(this);
-
+        btnSignup.setOnClickListener(this);
     }
 
     @Override
@@ -172,7 +174,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         switch (v.getId()) {
             case R.id.login_cbRemember : // Clic sur case à cocher
                 savePrefs();
-
                 break;
 
 
@@ -188,11 +189,11 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 // A faire en utilisant une AsyncTask
                 JSONAsyncTask js = new JSONAsyncTask();
                 js.execute(qs);
-
-
                 break;
-
+                
+            case R.id.login_btnSignup:
+                startActivity(new Intent(this, SignupActivity.class));
+                break;
         }
-
     }
 }
