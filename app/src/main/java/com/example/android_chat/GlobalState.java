@@ -21,73 +21,39 @@ import java.net.URL;
 
 public class GlobalState extends Application {
 
-    public String cat = "L4-SI-Logs";
+    /**
+     * Attributs
+     */
     public String CAT = "L4-SI-Logs";
+    private CookieManager cookieManager;
+    private String accessToken;
 
+    /**
+     * Création de l'activité
+     */
     @Override
     public void onCreate() {
         super.onCreate();
         CookieManager cookieManager = new CookieManager();
         CookieHandler.setDefault(cookieManager);
+        //Instanciation de la classe VolleyManager
+        VolleyManager.getInstance(this);
     }
 
+    /**
+     * Créer un toast
+     * @param s
+     */
     public void alerter(String s) {
         Log.i(CAT,s);
         Toast t = Toast.makeText(this,s,Toast.LENGTH_LONG);
         t.show();
     }
 
-
-
-    private String convertStreamToString(InputStream in) throws IOException {
-        try {
-            BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-            StringBuilder sb = new StringBuilder();
-            String line = null;
-            while ((line = reader.readLine()) != null) {
-                sb.append(line + "\n");
-            }
-            return sb.toString();
-        }finally {
-            try {
-                in.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-
-
-    public String requete(String qs) {
-        if (qs != null)
-        {
-            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-            //String urlData = prefs.getString("urlData","http://10.0.2.2/android_chat/data.php");
-            String urlData = "http://chaire-ecommerce.ec-lille.fr/ime5/data.php";
-
-            try {
-                URL url = new URL(urlData + "?" + qs);
-                Log.i(CAT,"url utilisée : " + url.toString());
-                HttpURLConnection urlConnection = null;
-                urlConnection = (HttpURLConnection) url.openConnection();
-                InputStream in = null;
-                in = new BufferedInputStream(urlConnection.getInputStream());
-                String txtReponse = convertStreamToString(in);
-                urlConnection.disconnect();
-                return txtReponse;
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-        }
-
-        return "";
-    }
-
-
+    /**
+     * Vérifier la connectivité réseau
+     * @return
+     */
     public boolean verifReseau()
     {
         // On vérifie si le réseau est disponible,
@@ -119,5 +85,22 @@ public class GlobalState extends Application {
 
         this.alerter(sType);
         return bStatut;
+    }
+
+    /**
+     * Accesseur access token
+     * @return
+     */
+    public String getAccessToken() {
+        return accessToken;
+    }
+
+    /**
+     * Setteur access token
+     * @param accessToken
+     */
+    public void setAccessToken(String accessToken){
+        if(!accessToken.isEmpty())
+            this.accessToken = accessToken;
     }
 }
