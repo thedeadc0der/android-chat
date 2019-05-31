@@ -40,9 +40,9 @@ public class SignupActivity extends CommonActivity implements View.OnClickListen
 					return;
 				}
 				
-				gs.getApiController().signup(login, pass, new ApiController.Callback<User>() {
+				gs.getApiController().signup(login, pass, new ApiController.Callback<Void>() {
 					@Override
-					public void onResponse(User obj){
+					public void onResponse(Void obj){
 						gs.alerter("Vous êtes inscrit!");
 						finish();
 					}

@@ -86,7 +86,7 @@ public class MockApiController implements ApiController {
 	}
 	
 	@Override
-	public void signup(String pseudo, String pass, Callback<User> cb){
+	public void signup(String pseudo, String pass, Callback<Void> cb){
 		assert !isLoggedIn();
 		
 		// Make sure no other user has that name
@@ -97,7 +97,7 @@ public class MockApiController implements ApiController {
 		
 		// Create the user and add them
 		users.add(new User(users.size(), pseudo, pass, false));
-		cb.onResponse(users.get(users.size() - 1));
+		cb.onResponse(null);
 	}
 	
 	@Override
