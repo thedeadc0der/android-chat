@@ -2,37 +2,26 @@ package com.example.android_chat;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.preference.PreferenceManager;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.example.android_chat.api.ApiController;
+import com.example.android_chat.model.User;
 
-public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
-
-    /**
-     * Attributs
-     */
+public class LoginActivity extends CommonActivity implements View.OnClickListener {
     private EditText champLogin;
     private EditText champPass;
     private CheckBox champRemember;
-    private GlobalState gs;
     private Button btnOK;
     private Button btnSignup;
-
-    /***** Gestion de l'état de l'activité ****/
+    
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        gs = (GlobalState) getApplication();
         setContentView(R.layout.activity_login);
 
         champLogin = findViewById(R.id.login_edtLogin);
@@ -50,9 +39,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     protected void onResume() {
         super.onResume();
 
-        Log.i(gs.CAT,"onResume");
-
-        // Verif Réseau, si dispo, on active le bouton
+        // Only enable the "submit" button if we have an internet connection
         btnOK.setEnabled(gs.verifReseau());
     }
 
@@ -61,9 +48,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         super.onStart();
         showPrefs();
     }
-    /************************************/
-
-
+    
     /***** Gestion des préférences ****/
     /**
      * Récupère les préférences
@@ -100,32 +85,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         }
         editor.commit();
     }
-    /************************************/
 
-
-    /***** Gestion du menu hamburger ****/
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu, menu);
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_settings : gs.alerter("preferences");
-            // afficher l'activité "préférences"
-                Intent toSettings = new Intent(this,SettingsActivity.class);
-                startActivity(toSettings);
-            break ;
-            case R.id.action_account : gs.alerter("compte"); break ;
-
-        }
-        return super.onOptionsItemSelected(item);
-    }
-    /************************************/
-
-    /***** Gestion des évènements ****/
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -134,35 +94,32 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 break;
 
             case R.id.login_btnOK :
-                String login = champLogin.getText().toString();
-                String passe = champPass.getText().toString();
+                final String login = champLogin.getText().toString();
+                final String passe = champPass.getText().toString();
 
-                //Sauvegarde des identifiants de connexion
-                if(this.champRemember.isChecked()){
+                // Sauvegarde des identifiants de connexion
+                if(this.champRemember.isChecked())
                     savePrefs();
-                }
 
-                //Requête de connexion
-                if(!login.isEmpty() && !passe.isEmpty()){
-                    VolleyManager.getInstance().loginRequest(login, passe, new customListener<JSONObject>() {
-                        @Override
-                        public void getResult(JSONObject object) {
-                            if(object != null){
-                                Log.d(gs.CAT, object.toString());
-                                try {
-                                    //Connexion réussie
-                                    if(object.getString("status").equals("success")){
-                                        gs.setAccessToken(object.getString("token"));
-                                        Intent versChoixConversation = new Intent(LoginActivity.this, ChoixConvActivity.class);
-                                        startActivity(versChoixConversation);
-                                    }
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                        }
-                    });
+                // On vérifie que les champs sont remplis
+                if( login.isEmpty() || passe.isEmpty() ){
+                    gs.alerter("Remplissez tous les champs!");
+                    return;
                 }
+                
+                gs.getApiController().login(login, passe, new ApiController.Callback<User>() {
+                    @Override
+                    public void onResponse(User obj){
+                        startActivity(new Intent(LoginActivity.this, ChoixConvActivity.class));
+                    }
+    
+                    @Override
+                    public void onError(Error err){
+                        gs.alerter("Erreur: " + err.getMessage());
+                        err.printStackTrace();
+                    }
+                });
+                
                 break;
                 
             case R.id.login_btnSignup:
@@ -170,5 +127,4 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 break;
         }
     }
-    /************************************/
 }
