@@ -18,6 +18,7 @@ import com.example.android_chat.model.Conversation;
 import com.example.android_chat.model.Message;
 import com.example.android_chat.model.User;
 
+import java.util.ArrayList;
 import java.util.List;
 
 class ConversationMessageAdapter extends RecyclerView.Adapter<ConversationMessageAdapter.CMViewHolder> {
@@ -83,6 +84,7 @@ public class ShowConvActivity extends CommonActivity implements View.OnClickList
     private Conversation conversation;
     private List<Message> messages;
     private User user;
+    private Message lastMessage;
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -105,6 +107,7 @@ public class ShowConvActivity extends CommonActivity implements View.OnClickList
         final boolean active = intent.getBooleanExtra("conversation.active", false);
         conversation = new Conversation(id, theme, active, null);
         user = gs.getApiController().getCurrentUser();
+        messages = new ArrayList<>();
         
         // Load the messages
         getSupportActionBar().setTitle(conversation.getTheme());
@@ -115,7 +118,9 @@ public class ShowConvActivity extends CommonActivity implements View.OnClickList
         gs.getApiController().listMessages(conversation, new ApiController.Callback<List<Message>>() {
             @Override
             public void onResponse(List<Message> obj){
-                ConversationMessageAdapter adapter = new ConversationMessageAdapter(obj, user);
+                messages = new ArrayList<>(obj);
+                lastMessage = obj.get(obj.size() - 1);
+                adapter = new ConversationMessageAdapter(obj, user);
                 messageList.setAdapter(adapter);
             }
     
@@ -126,7 +131,38 @@ public class ShowConvActivity extends CommonActivity implements View.OnClickList
         });
     }
     
+    private void addMessage(Message msg){
+        lastMessage = msg;
+        messages.add(msg);
+        adapter.notifyDataSetChanged();
+        messageList.smoothScrollToPosition(messages.size() - 1);
+    }
+    
     @Override
     public void onClick(View v) {
+        switch(v.getId()){
+            case R.id.showConv_btnSend:
+                final String content = messageText.getText().toString();
+                
+                if( content.trim().isEmpty() ){
+                    gs.alerter("Tapez un message");
+                    return;
+                }
+                
+                gs.getApiController().sendMessage(conversation, content, new ApiController.Callback<Message>() {
+                    @Override
+                    public void onResponse(Message msg){
+                        addMessage(msg);
+                        messageText.setText("");
+                    }
+    
+                    @Override
+                    public void onError(Error err){
+                        gs.alerter("Erreur: " + err.getMessage());
+                    }
+                });
+                
+                break;
+        }
     }
 }
