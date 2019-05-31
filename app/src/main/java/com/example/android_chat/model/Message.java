@@ -22,4 +22,8 @@ public class Message {
 	public User getAuthor(){
 		return author;
 	}
+	
+	public String getContent(){
+		return content;
+	}
 }

@@ -1,129 +1,118 @@
 package com.example.android_chat;
 
-import android.graphics.Color;
+import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.android.volley.VolleyError;
+import com.example.android_chat.api.ApiController;
+import com.example.android_chat.model.Conversation;
+import com.example.android_chat.model.Message;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import java.util.List;
 
-public class ShowConvActivity extends AppCompatActivity implements View.OnClickListener {
-
-    /**
-     * Attributs
-     */
-    private GlobalState gs;
-    private int idConv;
-    private int idLastMessage = 0;
-
-    private LinearLayout msgLayout;
-    private Button btnOK;
-    private EditText edtMsg;
-
-    /***** Gestion de l'état de l'activité ****/
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_show_conversation);
-        gs = (GlobalState) getApplication();
-
-
-        msgLayout = findViewById(R.id.conversation_svLayoutMessages);
-        btnOK = findViewById(R.id.conversation_btnOK);
-        btnOK.setOnClickListener(this);
-        edtMsg = findViewById(R.id.conversation_edtMessage);
-
-        //Récupération de l'id de la conversations sélectionnée
-        Bundle bdl = getIntent().getExtras();
-        idConv = bdl.getInt("idConversation");
-
-        VolleyManager.getInstance().setLastIdMessage(0);
-        //Récupération de tous les messages
-        VolleyManager.getInstance().recupMessagesPeriodiquement(10, gs.getAccessToken(), idConv,
-                new customListener<JSONObject>() {
-                    @Override
-                    public void getResult(JSONObject object) {
-                        if(object != null)
-                            traiteReponse(object);
-                    }
-        });
-    }
-
-    protected void onStop() {
-        super.onStop();
-        VolleyManager.getInstance().stopRequetePeriodique();
-    }
-
-    /************************************/
-
-
-    /***** Gestion des requêtes ****/
-
-    /**
-     * Analyse le JSON des messages
-     * @param o
-     */
-    public void traiteReponse(JSONObject o) {
-       /* {"connecte":true,
-        "action":"getMessages",
-        "feedback":"entrez action: logout, setPasse(passe),setPseudo(pseudo),
-        setCouleur(couleur),getConversations,
-        getMessages(idConv,[idLastMessage]),
-        setMessage(idConv,contenu), ...",
-        "messages":[{"id":"35",
-                        "contenu":"Que pensez-vous des cours en IAM ?",
-                        "auteur":"Tom",
-                        "couleur":"#ff0000"}]
-        ,"idLastMessage":"35"}
-        */
-        try {
-            //Pour tous les messages reçus
-            JSONArray messages = o.getJSONArray("messages");
-            int i;
-            for(i=0;i<messages.length();i++) {
-                JSONObject msg = (JSONObject) messages.get(i);
-                String contenu =  msg.getString("contenu");
-                String auteur =  msg.getString("idAuteur");
-                //String couleur =  msg.getString("couleur");
-
-                TextView tv = new TextView(this);
-                tv.setText("[" + auteur + "] " + contenu);
-                //tv.setTextColor(Color.parseColor(couleur));
-
-                msgLayout.addView(tv);
-            }
-
-            //Sauvegarde du dernier message
-            idLastMessage = Integer.parseInt(o.getString("lastMessageId"));
-            VolleyManager.getInstance().setLastIdMessage(idLastMessage);
-
-        } catch (JSONException e) {
-            e.printStackTrace();
+class ConversationMessageAdapter extends RecyclerView.Adapter<ConversationMessageAdapter.CMViewHolder> {
+    public static class CMViewHolder extends RecyclerView.ViewHolder {
+        private TextView authorText;
+        private TextView contentText;
+        
+        public CMViewHolder(View itemView){
+            super(itemView);
+            authorText = itemView.findViewById(R.id.message_author);
+            contentText = itemView.findViewById(R.id.message_content);
+        }
+        
+        public void setMessage(Message msg){
+            authorText.setText(msg.getAuthor().getPseudo());
+            contentText.setText(msg.getContent());
         }
     }
+    
+    private List<Message> messages;
+    
+    public ConversationMessageAdapter(List<Message> messages){
+        this.messages = messages;
+    }
+    
+    @Override
+    public CMViewHolder onCreateViewHolder(ViewGroup parent, int i){
+        final View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.message_item, parent, false);
+        return new CMViewHolder(view);
+    }
+    
+    @Override
+    public void onBindViewHolder(CMViewHolder holder, int position){
+        final Message message = messages.get(position);
+        holder.setMessage(message);
+    }
+    
+    @Override
+    public int getItemCount(){
+        return messages.size();
+    }
+}
 
-    /************************************/
-
-    /***** Gestion évènement ****/
-
+public class ShowConvActivity extends CommonActivity implements View.OnClickListener {
+    private TextView convTitle;
+    private RecyclerView messageList;
+    private EditText messageText;
+    private Button sendButton;
+    
+    private RecyclerView.Adapter adapter;
+    private LinearLayoutManager layoutManager;
+    
+    private Conversation conversation;
+    private List<Message> messages;
+    
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        // Load the view layout and retrieve the views
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_show_conversation);
+        
+        convTitle = findViewById(R.id.showConv_lblTitle);
+        messageList = findViewById(R.id.showConv_messages);
+        messageText = findViewById(R.id.showConv_edtMessage);
+        sendButton = findViewById(R.id.showConv_btnSend);
+        sendButton.setOnClickListener(this);
+    
+        layoutManager = new LinearLayoutManager(this);
+        messageList.setLayoutManager(layoutManager);
+        
+        // Retrieve the conversation
+        final Intent intent = getIntent();
+        final int id = intent.getIntExtra("conversation.id", 0);
+        final String theme = intent.getStringExtra("conversation.theme");
+        final boolean active = intent.getBooleanExtra("conversation.active", false);
+        conversation = new Conversation(id, theme, active, null);
+        
+        // Load the messages
+        convTitle.setText(conversation.getTheme());
+        reloadMessages();
+    }
+    
+    private void reloadMessages(){
+        gs.getApiController().listMessages(conversation, new ApiController.Callback<List<Message>>() {
+            @Override
+            public void onResponse(List<Message> obj){
+                ConversationMessageAdapter adapter = new ConversationMessageAdapter(obj);
+                messageList.setAdapter(adapter);
+            }
+    
+            @Override
+            public void onError(Error err){
+                gs.alerter("Erreur: " + err.getMessage());
+            }
+        });
+    }
+    
     @Override
     public void onClick(View v) {
-        String msg = edtMsg.getText().toString();
-
-        //Envoyer message avec Volley
-
-        edtMsg.setText("");
     }
-
-    /************************************/
 }
