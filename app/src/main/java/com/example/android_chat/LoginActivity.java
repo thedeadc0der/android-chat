@@ -10,7 +10,6 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 
 import com.example.android_chat.api.ApiController;
-import com.example.android_chat.model.User;
 
 public class LoginActivity extends CommonActivity implements View.OnClickListener {
     private EditText champLogin;
@@ -23,7 +22,8 @@ public class LoginActivity extends CommonActivity implements View.OnClickListene
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-
+        getSupportActionBar().setTitle("Connection");
+        
         champLogin = findViewById(R.id.login_edtLogin);
         champPass = findViewById(R.id.login_edtPasse);
         champRemember = findViewById(R.id.login_cbRemember);

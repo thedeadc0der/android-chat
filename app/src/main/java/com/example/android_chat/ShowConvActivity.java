@@ -73,7 +73,6 @@ class ConversationMessageAdapter extends RecyclerView.Adapter<ConversationMessag
 }
 
 public class ShowConvActivity extends CommonActivity implements View.OnClickListener {
-    private TextView convTitle;
     private RecyclerView messageList;
     private EditText messageText;
     private Button sendButton;
@@ -91,7 +90,6 @@ public class ShowConvActivity extends CommonActivity implements View.OnClickList
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_conversation);
         
-        convTitle = findViewById(R.id.showConv_lblTitle);
         messageList = findViewById(R.id.showConv_messages);
         messageText = findViewById(R.id.showConv_edtMessage);
         sendButton = findViewById(R.id.showConv_btnSend);
@@ -109,7 +107,7 @@ public class ShowConvActivity extends CommonActivity implements View.OnClickList
         user = gs.getApiController().getCurrentUser();
         
         // Load the messages
-        convTitle.setText(conversation.getTheme());
+        getSupportActionBar().setTitle(conversation.getTheme());
         reloadMessages();
     }
     

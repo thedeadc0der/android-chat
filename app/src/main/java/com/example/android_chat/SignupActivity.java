@@ -19,6 +19,7 @@ public class SignupActivity extends CommonActivity implements View.OnClickListen
 	protected void onCreate(Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_signup);
+		getSupportActionBar().setTitle("Inscription");
 		
 		loginField = findViewById(R.id.signup_edtLogin);
 		passField = findViewById(R.id.signup_edtPass);

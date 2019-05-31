@@ -63,6 +63,7 @@ public class ChoixConvActivity extends CommonActivity implements AdapterView.OnI
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_choix_conversation);
+        getSupportActionBar().setTitle("Conversations");
         
         conversationList = findViewById(R.id.choixConversation_list);
         conversationList.setOnItemClickListener(this);
