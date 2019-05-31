@@ -1,6 +1,7 @@
 package com.example.android_chat.api;
 
 import com.example.android_chat.model.Conversation;
+import com.example.android_chat.model.Message;
 import com.example.android_chat.model.User;
 
 import java.util.ArrayList;
@@ -9,6 +10,7 @@ import java.util.List;
 public class MockApiController implements ApiController {
 	private List<User> users;
 	private List<Conversation> conversations;
+	private List<Message> messages;
 	
 	private User currentUser = null;
 	
@@ -48,6 +50,12 @@ public class MockApiController implements ApiController {
 		conversations.add(new Conversation(15, "And another one", false, "at some point it'll bite the dust"));
 		conversations.add(new Conversation(16, "And another one", false, "at some point it'll bite the dust"));
 		conversations.add(new Conversation(17, "And another one", false, "at some point it'll bite the dust"));
+		
+		messages = new ArrayList<>();
+		messages.add(new Message(1, users.get(0), "Hello"));
+		messages.add(new Message(2, users.get(1), "YOU PICKED THE WRONG HOUSE"));
+		messages.add(new Message(3, users.get(2), "I'm a genius"));
+		messages.add(new Message(4, users.get(3), "I'm told cheese has to be earned…"));
 	}
 	
 	@Override
@@ -90,11 +98,13 @@ public class MockApiController implements ApiController {
 	
 	@Override
 	public void listConversations(Callback<List<Conversation>> cb){
+		assert isLoggedIn();
 		cb.onResponse(conversations);
 	}
 	
 	@Override
 	public void createConversation(String theme, Callback<Conversation> cb){
+		assert isLoggedIn();
 		for(Conversation curr: conversations){
 			if( curr.getTheme().equals(theme) )
 				throw new Error("theme already exists");
@@ -103,5 +113,19 @@ public class MockApiController implements ApiController {
 		Conversation conv = new Conversation(conversations.size(), theme, true, "(conversation vide)");
 		conversations.add(conv);
 		cb.onResponse(conv);
+	}
+	
+	@Override
+	public void listMessages(Conversation conversation, Callback<List<Message>> cb){
+		assert isLoggedIn();
+		cb.onResponse(messages);
+	}
+	
+	@Override
+	public void sendMessage(Conversation conversation, String msg, Callback<Message> cb){
+		assert isLoggedIn();
+		final Message message = new Message(messages.size(), currentUser, msg);
+		messages.add(message);
+		cb.onResponse(message);
 	}
 }
