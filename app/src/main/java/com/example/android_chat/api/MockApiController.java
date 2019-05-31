@@ -59,12 +59,16 @@ public class MockApiController implements ApiController {
 	}
 	
 	@Override
-	public boolean isLoggedIn(){
+	public User getCurrentUser(){
+		return currentUser;
+	}
+	
+	private boolean isLoggedIn(){
 		return currentUser != null;
 	}
 	
 	@Override
-	public void login(String login, String pass, Callback<User> cb){
+	public void login(String login, String pass, Callback<Void> cb){
 		assert !isLoggedIn();
 		
 		// Look for an user with this login
@@ -72,7 +76,7 @@ public class MockApiController implements ApiController {
 			// If we find them, make sure they have the correct password
 			if( curr.getPseudo().equals(login) && pass.equals("smoke") ){
 				currentUser = curr;
-				cb.onResponse(curr);
+				cb.onResponse(null);
 				return;
 			}
 		}
@@ -127,5 +131,10 @@ public class MockApiController implements ApiController {
 		final Message message = new Message(messages.size(), currentUser, msg);
 		messages.add(message);
 		cb.onResponse(message);
+	}
+	
+	@Override
+	public void listMessagesFrom(Conversation conversation, Message lastMessage, Callback<List<Message>> cb){
+	
 	}
 }

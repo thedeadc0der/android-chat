@@ -107,9 +107,9 @@ public class LoginActivity extends CommonActivity implements View.OnClickListene
                     return;
                 }
                 
-                gs.getApiController().login(login, passe, new ApiController.Callback<User>() {
+                gs.getApiController().login(login, passe, new ApiController.Callback<Void>() {
                     @Override
-                    public void onResponse(User obj){
+                    public void onResponse(Void obj){
                         startActivity(new Intent(LoginActivity.this, ChoixConvActivity.class));
                     }
     
