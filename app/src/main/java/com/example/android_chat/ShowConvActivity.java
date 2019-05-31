@@ -3,6 +3,7 @@ package com.example.android_chat;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -20,6 +21,8 @@ import com.example.android_chat.model.User;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 class ConversationMessageAdapter extends RecyclerView.Adapter<ConversationMessageAdapter.CMViewHolder> {
     public static class CMViewHolder extends RecyclerView.ViewHolder {
@@ -85,6 +88,7 @@ public class ShowConvActivity extends CommonActivity implements View.OnClickList
     private List<Message> messages;
     private User user;
     private Message lastMessage;
+    private Timer timer;
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -109,9 +113,39 @@ public class ShowConvActivity extends CommonActivity implements View.OnClickList
         user = gs.getApiController().getCurrentUser();
         messages = new ArrayList<>();
         
+        timer = new Timer();
+        
         // Load the messages
         getSupportActionBar().setTitle(conversation.getTheme());
         reloadMessages();
+    }
+    
+    @Override
+    protected void onResume(){
+        super.onResume();
+        
+        // We have to use a Handler so retrieveNewMessages is run on the main thread, otherwise
+        // it won't be able to change UI elements reliably.
+        final Handler handler = new Handler();
+        
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run(){
+                handler.post(new Runnable() {
+                    @Override
+                    public void run(){
+                        retrieveNewMessages();
+                    }
+                });
+            }
+        }, 0, 1000 * 5);
+    }
+    
+    @Override
+    protected void onPause(){
+        super.onPause();
+        timer.cancel();
+        timer.purge();
     }
     
     private void reloadMessages(){
@@ -136,6 +170,22 @@ public class ShowConvActivity extends CommonActivity implements View.OnClickList
         messages.add(msg);
         adapter.notifyDataSetChanged();
         messageList.smoothScrollToPosition(messages.size() - 1);
+    }
+    
+    private void retrieveNewMessages(){
+        gs.getApiController().listMessagesFrom(conversation, lastMessage, new ApiController.Callback<List<Message>>() {
+            @Override
+            public void onResponse(List<Message> msg){
+                messages.addAll(msg);
+                adapter.notifyDataSetChanged();
+                messageList.smoothScrollToPosition(messages.size() - 1);
+            }
+    
+            @Override
+            public void onError(Error err){
+                gs.alerter("Erreur: " + err.getMessage());
+            }
+        });
     }
     
     @Override

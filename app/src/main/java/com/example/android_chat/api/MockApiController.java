@@ -135,6 +135,13 @@ public class MockApiController implements ApiController {
 	
 	@Override
 	public void listMessagesFrom(Conversation conversation, Message lastMessage, Callback<List<Message>> cb){
-	
+		for(int i=0; i < messages.size(); ++i){
+			if( messages.get(i).getId() == lastMessage.getId() ){
+				cb.onResponse(messages.subList(i, messages.size()));
+				return;
+			}
+		}
+		
+		cb.onResponse(new ArrayList<Message>());
 	}
 }
