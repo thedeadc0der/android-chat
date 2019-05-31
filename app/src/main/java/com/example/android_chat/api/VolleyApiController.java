@@ -1,9 +1,7 @@
 package com.example.android_chat.api;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.util.Log;
-import android.widget.TextView;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -13,7 +11,6 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
-import com.example.android_chat.VolleyManager;
 import com.example.android_chat.model.Conversation;
 import com.example.android_chat.model.Message;
 import com.example.android_chat.model.User;
@@ -35,20 +32,14 @@ public class VolleyApiController implements ApiController {
     private static final String prefixURL = "http://10.0.2.2:5000/";
     private String accessToken;
     public RequestQueue volleyRequestQueue;
+    private User currentUser = null;
 
     public VolleyApiController(Context context){
         //Création de la queue de requête
         volleyRequestQueue = Volley.newRequestQueue(context);
     }
 
-    /**
-     * Utilisateur connecté à l'application
-     * @return
-     */
-    @Override
-    public boolean isLoggedIn() {
-        return !accessToken.isEmpty();
-    }
+    public User getCurrentUser(){return currentUser;}
 
     /**
      * Connexion à l'application
@@ -75,6 +66,14 @@ public class VolleyApiController implements ApiController {
                             try {
                                 if(response.getString("status").equals("success")){
                                     accessToken = response.getString("token");
+                                    //Save the current user
+                                    JSONObject userInfos = response.getJSONObject("userInfo");
+                                    int id = userInfos.getInt("id");
+                                    String pseudo = userInfos.getString("pseudo");
+                                    String color = userInfos.getString("couleur");
+                                    boolean admin = ((String) userInfos.getString("admin")).contentEquals("1");
+                                    currentUser = new User(id, pseudo, color, admin);
+
                                     cb.onResponse(null);
                                 }
                             } catch (JSONException e) {
@@ -103,15 +102,56 @@ public class VolleyApiController implements ApiController {
     }
 
     /**
-     * TODO implémenter la fonction quand la route existera
      * Créé un utilisateur
      * @param pseudo
      * @param pass
      * @param cb
      */
     @Override
-    public void signup(String pseudo, String pass, Callback<User> cb) {
+    public void signup(String pseudo, String pass, final Callback<Void> cb) {
+        String url = prefixURL + "signup";
 
+        //Définition des paramètres
+        Map<String, String> jsonParams = new HashMap<>();
+        jsonParams.put("login", pseudo);
+        jsonParams.put("password", pass);
+
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, url, new JSONObject(jsonParams),
+                new Response.Listener<JSONObject>()
+                {
+                    @Override
+                    public void onResponse(JSONObject response)
+                    {
+                        if(response != null){
+                            try {
+                                if(response.getString("status").equals("success")){
+                                    accessToken = response.getString("token");
+
+                                    cb.onResponse(null);
+                                }
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                },
+                new Response.ErrorListener(){
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        // If they don't, give out an error
+                        cb.onError(new Error("pseudo already used"));
+                    }
+                })
+        {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> headers = new HashMap<String, String>();
+                headers.put("Content-Type", "application/json; charset=UTF-8");
+                return headers;
+            }
+        };
+
+        volleyRequestQueue.add(request);
     }
 
     /**
@@ -137,7 +177,7 @@ public class VolleyApiController implements ApiController {
                                     //Create a conversation
                                     int id =Integer.parseInt(obj.getString("id"));
                                     String theme = obj.getString("theme");
-                                    Boolean active = ((String) obj.getString("active")).contentEquals("1");
+                                    boolean active = ((String) obj.getString("active")).contentEquals("1");
                                     Conversation c = new Conversation(id,theme,active,"");
                                     conversations.add(c);
                                 } catch (JSONException e) {
@@ -168,17 +208,59 @@ public class VolleyApiController implements ApiController {
         volleyRequestQueue.add(request);
     }
 
-    /** TODO implémenter la fonction quand route créée
+    /**
      * Créer une conversation dont le theme est passer en paramètre
      * @param theme
      * @param cb
      */
     @Override
-    public void createConversation(String theme, Callback<Conversation> cb) {
+    public void createConversation(final String theme, final Callback<Conversation> cb) {
+        String url = prefixURL + "conversation/new";
 
+        //Définition des paramètres
+        Map<String, String> jsonParams = new HashMap<>();
+        jsonParams.put("theme", theme);
+
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, url, new JSONObject(jsonParams),
+                new Response.Listener<JSONObject>()
+                {
+                    @Override
+                    public void onResponse(JSONObject response)
+                    {
+                        if(response != null){
+                            try {
+                                int idConv = response.getInt("idConversation");
+
+                                Conversation c = new Conversation(idConv, theme, true, "");
+                                cb.onResponse(c);
+
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                },
+                new Response.ErrorListener(){
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        // If they don't, give out an error
+                        cb.onError(new Error("error while creating conversation"));
+                    }
+                })
+        {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> headers = new HashMap<String, String>();
+                headers.put("Content-Type", "application/json; charset=UTF-8");
+                headers.put("Authorization", "Bearer " + accessToken);
+                return headers;
+            }
+        };
+
+        volleyRequestQueue.add(request);
     }
 
-    /** TODO finaliser l'instanciation d'un USER
+    /**
      * Renvoie tous les messages d'une conversation
      * @param conversation
      * @param cb
@@ -199,14 +281,24 @@ public class VolleyApiController implements ApiController {
                                messages = response.getJSONArray("messages");
                                List<Message> listMessages = new ArrayList<Message>();
                                for(int i=0;i<messages.length();i++) {
+
+                                   //Find messages infos
                                    JSONObject msg = (JSONObject) messages.get(i);
                                    int id = msg.getInt("id");
                                    String contenu =  msg.getString("contenu");
 
-                                   int idAutheur =  msg.getInt("idAuteur");
+                                   //Find auteur infos
+                                   JSONObject auteurInfos = response.getJSONObject("autheur");
+                                   int idAuteur = auteurInfos.getInt("id");
+                                   String pseudo = auteurInfos.getString("pseudo");
+                                   String color = auteurInfos.getString("couleur");
+                                   boolean admin = ((String) auteurInfos.getString("admin")).contentEquals("1");
 
-                                   User user = new User(idAutheur, "","",false);
-                                   Message m = new Message(id,user,contenu);
+                                   //Create user & message
+                                   User user = new User(idAuteur, pseudo,color,admin);
+                                   Message message = new Message(id,user,contenu);
+
+                                   listMessages.add(message);
                                }
 
                                cb.onResponse(listMessages);
@@ -237,15 +329,15 @@ public class VolleyApiController implements ApiController {
         volleyRequestQueue.add(request);
     }
 
-    /** TODO finaliser l'instanciation d'un USER
-     * Renvoie les messages d'une conversation dont l'id est supérieur à idLastMessage
+    /**
+     * Renvoie les messages d'une conversation dont l'id est supérieur à l'id du dernier message
      * @param conversation
-     * @param idLastMessage
+     * @param lastMessage
      * @param cb
      */
     @Override
-    public void listMessagesFromId(Conversation conversation, int idLastMessage, final Callback<List<Message>> cb) {
-        String url = prefixURL + "refresh/"+conversation.getId()+"/"+idLastMessage;
+    public void listMessagesFromId(Conversation conversation, Message lastMessage, final Callback<List<Message>> cb) {
+        String url = prefixURL + "refresh/"+conversation.getId()+"/"+ lastMessage.getId();
 
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null,
                 new Response.Listener<JSONObject>()
@@ -259,14 +351,24 @@ public class VolleyApiController implements ApiController {
                                 messages = response.getJSONArray("messages");
                                 List<Message> listMessages = new ArrayList<Message>();
                                 for(int i=0;i<messages.length();i++) {
+
+                                    //Find messages infos
                                     JSONObject msg = (JSONObject) messages.get(i);
                                     int id = msg.getInt("id");
                                     String contenu =  msg.getString("contenu");
 
-                                    int idAutheur =  msg.getInt("idAuteur");
+                                    //Find auteur infos
+                                    JSONObject auteurInfos = response.getJSONObject("autheur");
+                                    int idAuteur = auteurInfos.getInt("id");
+                                    String pseudo = auteurInfos.getString("pseudo");
+                                    String color = auteurInfos.getString("couleur");
+                                    boolean admin = ((String) auteurInfos.getString("admin")).contentEquals("1");
 
-                                    User user = new User(idAutheur, "","",false);
-                                    Message m = new Message(id,user,contenu);
+                                    //Create user & message
+                                    User user = new User(idAuteur, pseudo,color,admin);
+                                    Message message = new Message(id,user,contenu);
+
+                                    listMessages.add(message);
                                 }
 
                                 cb.onResponse(listMessages);
@@ -298,14 +400,50 @@ public class VolleyApiController implements ApiController {
     }
 
     /**
-     * TODO implémenter la fonction quand la route sera créée
+     * TODO Récupérer l'id du message depuis l'API
      * Ajoute un nouveau message à la conversation
      * @param conversation
      * @param msg
      * @param cb
      */
     @Override
-    public void sendMessage(Conversation conversation, String msg, Callback<Message> cb) {
+    public void sendMessage(Conversation conversation, final String msg, final Callback<Message> cb) {
+        String url = prefixURL + "conversation/"+conversation.getId()+"/message";
 
+        //Définition des paramètres
+        Map<String, String> jsonParams = new HashMap<>();
+        jsonParams.put("idAuteur", String.valueOf(currentUser.getId()));
+        jsonParams.put("content", msg);
+
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, url, new JSONObject(jsonParams),
+                new Response.Listener<JSONObject>()
+                {
+                    @Override
+                    public void onResponse(JSONObject response)
+                    {
+                        if(response != null){
+                            Message message = new Message(0, currentUser,msg);
+                            cb.onResponse(message);
+                        }
+                    }
+                },
+                new Response.ErrorListener(){
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        // If they don't, give out an error
+                        cb.onError(new Error("error while posting the message"));
+                    }
+                })
+        {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> headers = new HashMap<String, String>();
+                headers.put("Content-Type", "application/json; charset=UTF-8");
+                headers.put("Authorization", "Bearer " + accessToken);
+                return headers;
+            }
+        };
+
+        volleyRequestQueue.add(request);
     }
 }

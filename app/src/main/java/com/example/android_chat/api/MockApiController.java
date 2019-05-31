@@ -17,7 +17,11 @@ public class MockApiController implements ApiController {
 	public MockApiController(){
 		populateData();
 	}
-	
+
+	public boolean isLoggedIn(){
+		return false;
+	}
+
 	private String makeRandomColor(){
 		final int r = (int) (Math.random() * 255);
 		final int g = (int) (Math.random() * 255);
@@ -57,10 +61,10 @@ public class MockApiController implements ApiController {
 		messages.add(new Message(3, users.get(2), "I'm a genius"));
 		messages.add(new Message(4, users.get(3), "I'm told cheese has to be earned…"));
 	}
-	
+
 	@Override
-	public boolean isLoggedIn(){
-		return currentUser != null;
+	public User getCurrentUser() {
+		return null;
 	}
 
 	@Override
@@ -125,7 +129,12 @@ public class MockApiController implements ApiController {
 		assert isLoggedIn();
 		cb.onResponse(messages);
 	}
-	
+
+	@Override
+	public void listMessagesFromId(Conversation conversation, Message lastMessage, Callback<List<Message>> cb) {
+
+	}
+
 	@Override
 	public void sendMessage(Conversation conversation, String msg, Callback<Message> cb){
 		assert isLoggedIn();

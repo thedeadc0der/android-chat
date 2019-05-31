@@ -11,13 +11,13 @@ public interface ApiController {
 		void onResponse(T obj);
 		void onError(Error err);
 	}
-	
-	boolean isLoggedIn();
+
+	User getCurrentUser();
 	void login(String login, String pass, Callback<Void> cb);
-	void signup(String pseudo, String pass, Callback<User> cb);
+	void signup(String pseudo, String pass, Callback<Void> cb);
 	void listConversations(Callback<List<Conversation>> cb);
 	void createConversation(String theme, Callback<Conversation> cb);
 	void listMessages(Conversation conversation, Callback<List<Message>> cb);
-	void listMessagesFromId(Conversation conversation, int idLastMessage, Callback<List<Message>> cb);
+	void listMessagesFromId(Conversation conversation, Message lastMessage, Callback<List<Message>> cb);
 	void sendMessage(Conversation conversation, String msg, Callback<Message> cb);
 }
