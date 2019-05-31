@@ -13,10 +13,11 @@ public interface ApiController {
 	}
 	
 	boolean isLoggedIn();
-	void login(String login, String pass, Callback<User> cb);
+	void login(String login, String pass, Callback<Void> cb);
 	void signup(String pseudo, String pass, Callback<User> cb);
 	void listConversations(Callback<List<Conversation>> cb);
 	void createConversation(String theme, Callback<Conversation> cb);
 	void listMessages(Conversation conversation, Callback<List<Message>> cb);
+	void listMessagesFromId(Conversation conversation, int idLastMessage, Callback<List<Message>> cb);
 	void sendMessage(Conversation conversation, String msg, Callback<Message> cb);
 }

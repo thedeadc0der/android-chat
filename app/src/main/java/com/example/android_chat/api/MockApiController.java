@@ -62,8 +62,13 @@ public class MockApiController implements ApiController {
 	public boolean isLoggedIn(){
 		return currentUser != null;
 	}
-	
+
 	@Override
+	public void login(String login, String pass, Callback<Void> cb) {
+
+	}
+
+	/*@Override
 	public void login(String login, String pass, Callback<User> cb){
 		assert !isLoggedIn();
 		
@@ -80,7 +85,7 @@ public class MockApiController implements ApiController {
 		// If they don't, give out an error
 		cb.onError(new Error("bad credentials"));
 	}
-	
+	*/
 	@Override
 	public void signup(String pseudo, String pass, Callback<User> cb){
 		assert !isLoggedIn();

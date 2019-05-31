@@ -47,21 +47,21 @@ public class ShowConvActivity extends AppCompatActivity implements View.OnClickL
         Bundle bdl = getIntent().getExtras();
         idConv = bdl.getInt("idConversation");
 
-        VolleyManager.getInstance().setLastIdMessage(0);
+        //VolleyManager.getInstance().setLastIdMessage(0);
         //Récupération de tous les messages
-        VolleyManager.getInstance().recupMessagesPeriodiquement(10, gs.getAccessToken(), idConv,
+        /*VolleyManager.getInstance().recupMessagesPeriodiquement(10, gs.getAccessToken(), idConv,
                 new customListener<JSONObject>() {
                     @Override
                     public void getResult(JSONObject object) {
                         if(object != null)
                             traiteReponse(object);
                     }
-        });
+        });*/
     }
 
     protected void onStop() {
         super.onStop();
-        VolleyManager.getInstance().stopRequetePeriodique();
+        //VolleyManager.getInstance().stopRequetePeriodique();
     }
 
     /************************************/
