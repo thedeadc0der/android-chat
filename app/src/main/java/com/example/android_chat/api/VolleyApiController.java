@@ -1,7 +1,6 @@
 package com.example.android_chat.api;
 
 import android.content.Context;
-import android.util.Log;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -102,7 +101,7 @@ public class VolleyApiController implements ApiController {
     }
 
     /**
-     * Créé un utilisateur
+     * Créer un utilisateur
      * @param pseudo
      * @param pass
      * @param cb
@@ -147,6 +146,89 @@ public class VolleyApiController implements ApiController {
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> headers = new HashMap<String, String>();
                 headers.put("Content-Type", "application/json; charset=UTF-8");
+                return headers;
+            }
+        };
+
+        volleyRequestQueue.add(request);
+    }
+
+    /**
+     * Déconnection de l'utilisateur
+     * @param cb
+     */
+    @Override
+    public void logout(final Callback<Void> cb) {
+        String url = prefixURL + "logout";
+
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.DELETE, url, null,
+                new Response.Listener<JSONObject>()
+                {
+                    @Override
+                    public void onResponse(JSONObject response)
+                    {
+                        if(response != null){
+                            cb.onResponse(null);
+                        }
+                    }
+                },
+                new Response.ErrorListener(){
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        // If they don't, give out an error
+                        cb.onError(new Error("error while logout"));
+                    }
+                })
+        {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> headers = new HashMap<String, String>();
+                headers.put("Content-Type", "application/json; charset=UTF-8");
+                headers.put("Authorization", "Bearer " + accessToken);
+                return headers;
+            }
+        };
+
+        volleyRequestQueue.add(request);
+    }
+
+    /**
+     * Supprimer un utilisateur
+     * @param user
+     * @param cb
+     */
+    @Override
+    public void deleteUser(User user, final Callback<Void> cb) {
+        String url = prefixURL + "user/delete";
+
+        //Définition des paramètres
+        Map<String, String> jsonParams = new HashMap<>();
+        jsonParams.put("userId", String.valueOf(user.getId()));
+
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.DELETE, url, new JSONObject(jsonParams),
+                new Response.Listener<JSONObject>()
+                {
+                    @Override
+                    public void onResponse(JSONObject response)
+                    {
+                        if(response != null){
+                            cb.onResponse(null);
+                        }
+                    }
+                },
+                new Response.ErrorListener(){
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        // If they don't, give out an error
+                        cb.onError(new Error("error while deleting the user"));
+                    }
+                })
+        {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> headers = new HashMap<String, String>();
+                headers.put("Content-Type", "application/json; charset=UTF-8");
+                headers.put("Authorization", "Bearer " + accessToken);
                 return headers;
             }
         };
@@ -446,4 +528,49 @@ public class VolleyApiController implements ApiController {
 
         volleyRequestQueue.add(request);
     }
+
+    /**
+     * Supprimer le message passé en paramètre
+     * @param msg
+     * @param cb
+     */
+    @Override
+    public void deleteMessage(final Message msg, final Callback<Void> cb) {
+        String url = prefixURL + "message/delete";
+
+        //Définition des paramètres
+        Map<String, String> jsonParams = new HashMap<>();
+        jsonParams.put("idMessage", String.valueOf(msg.getId()));
+
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.DELETE, url, new JSONObject(jsonParams),
+                new Response.Listener<JSONObject>()
+                {
+                    @Override
+                    public void onResponse(JSONObject response)
+                    {
+                        if(response != null){
+                            cb.onResponse(null);
+                        }
+                    }
+                },
+                new Response.ErrorListener(){
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        // If they don't, give out an error
+                        cb.onError(new Error("error while deleting the message"));
+                    }
+                })
+        {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> headers = new HashMap<String, String>();
+                headers.put("Content-Type", "application/json; charset=UTF-8");
+                headers.put("Authorization", "Bearer " + accessToken);
+                return headers;
+            }
+        };
+
+        volleyRequestQueue.add(request);
+    }
+
 }
