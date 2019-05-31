@@ -1,6 +1,8 @@
 package com.example.android_chat;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -54,7 +56,7 @@ class ConversationListAdapter extends ArrayAdapter {
     }
 }
 
-public class ChoixConvActivity extends CommonActivity implements AdapterView.OnItemClickListener, View.OnClickListener {
+public class ChoixConvActivity extends CommonActivity implements AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener, View.OnClickListener {
     private List<Conversation> conversations;
     private ListView conversationList;
     private FloatingActionButton newButton;
@@ -66,6 +68,7 @@ public class ChoixConvActivity extends CommonActivity implements AdapterView.OnI
         getSupportActionBar().setTitle("Conversations");
         
         conversationList = findViewById(R.id.choixConversation_list);
+        conversationList.setOnItemLongClickListener(this);
         conversationList.setOnItemClickListener(this);
         newButton = findViewById(R.id.choixConversation_new);
         newButton.setOnClickListener(this);
@@ -94,6 +97,34 @@ public class ChoixConvActivity extends CommonActivity implements AdapterView.OnI
 	    });
     }
     
+    private void askToDeleteConversation(final Conversation conversation){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Suppression");
+        builder.setMessage("Voulez-vous vraiment supprimer la conversation '" + conversation.getTheme() + "' ?\nCette opération est irréversible!");
+	    builder.setCancelable(true);
+        builder.setPositiveButton("Supprimer", new DialogInterface.OnClickListener() {
+	        @Override
+	        public void onClick(DialogInterface dialog, int which){
+	        	deleteConversation(conversation);
+	        }
+        });
+        builder.create().show();
+    }
+    
+    private void deleteConversation(Conversation conversation){
+        gs.getApiController().deleteConversation(conversation, new ApiController.Callback<Void>() {
+	        @Override
+	        public void onResponse(Void obj){
+		        reloadConversationList();
+	        }
+	
+	        @Override
+	        public void onError(Error err){
+	        	gs.alerter("Erreur: " + err.getMessage());
+	        }
+        });
+    }
+    
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id){
         final Conversation conversation = conversations.get(position);
@@ -104,7 +135,29 @@ public class ChoixConvActivity extends CommonActivity implements AdapterView.OnI
         intent.putExtra("conversation.active", conversation.isActive());
         startActivity(intent);
     }
-    
+	
+	@Override
+	public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id){
+		final Conversation conversation = conversations.get(position);
+		final String [] options = {"Supprimer"};
+		
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setTitle("Conversation " + conversation.getTheme());
+		builder.setItems(options, new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which){
+				switch(which){
+					case 0:
+						askToDeleteConversation(conversation);
+						break;
+				}
+			}
+		});
+		
+		builder.create().show();
+		return true;
+	}
+	
     @Override
     public void onClick(View v){
         switch(v.getId()){
