@@ -18,7 +18,9 @@ public interface ApiController {
 	void signup(String pseudo, String pass, Callback<Void> cb);
 	void listConversations(Callback<List<Conversation>> cb);
 	void createConversation(String theme, Callback<Conversation> cb);
+	void deleteConversation(Conversation conversation, Callback<Void> cb);
 	void listMessages(Conversation conversation, Callback<List<Message>> cb);
 	void listMessagesFrom(Conversation conversation, Message lastMessage, Callback<List<Message>> cb);
 	void sendMessage(Conversation conversation, String msg, Callback<Message> cb);
+	void deleteMessage(Message message, Callback<Void> cb);
 }

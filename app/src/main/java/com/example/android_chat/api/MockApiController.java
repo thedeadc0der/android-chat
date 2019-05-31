@@ -120,6 +120,17 @@ public class MockApiController implements ApiController {
 	}
 	
 	@Override
+	public void deleteConversation(Conversation conversation, Callback<Void> cb){
+		for(int i=0; i < conversations.size(); ++i){
+			if( conversations.get(i).getId() == conversation.getId() ){
+				conversations.remove(i);
+				cb.onResponse(null);
+				return;
+			}
+		}
+	}
+	
+	@Override
 	public void listMessages(Conversation conversation, Callback<List<Message>> cb){
 		assert isLoggedIn();
 		cb.onResponse(messages);
@@ -131,6 +142,17 @@ public class MockApiController implements ApiController {
 		final Message message = new Message(messages.size(), currentUser, msg);
 		messages.add(message);
 		cb.onResponse(message);
+	}
+	
+	@Override
+	public void deleteMessage(Message message, Callback<Void> cb){
+		for(int i=0; i < messages.size(); ++i){
+			if( messages.get(i).getId() == message.getId() ){
+				messages.remove(i);
+				cb.onResponse(null);
+				return;
+			}
+		}
 	}
 	
 	@Override
