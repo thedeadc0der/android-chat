@@ -25,11 +25,11 @@ public class CommonActivity extends AppCompatActivity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 			case R.id.action_settings:
-				Intent toSettings = new Intent(this,SettingsActivity.class);
-				startActivity(toSettings);
+				startActivity(new Intent(this,SettingsActivity.class));
 				break;
 			
 			case R.id.action_account:
+				startActivity(new Intent(this, MyAccountActivity.class));
 				break;
 		}
 		
