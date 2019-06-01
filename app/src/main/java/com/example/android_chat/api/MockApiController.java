@@ -1,5 +1,6 @@
 package com.example.android_chat.api;
 
+import com.example.android_chat.model.Color;
 import com.example.android_chat.model.Conversation;
 import com.example.android_chat.model.Message;
 import com.example.android_chat.model.User;
@@ -18,19 +19,12 @@ public class MockApiController implements ApiController {
 		populateData();
 	}
 	
-	private String makeRandomColor(){
-		final int r = (int) (Math.random() * 255);
-		final int g = (int) (Math.random() * 255);
-		final int b = (int) (Math.random() * 255);
-		return "#" + Integer.toHexString(r) + Integer.toHexString(g) + Integer.toHexString(b);
-	}
-	
 	private void populateData(){
 		users = new ArrayList<>();
-		users.add(new User(1, "jessy", makeRandomColor(), true));
-		users.add(new User(2, "smoke", makeRandomColor(), false));
-		users.add(new User(3, "ryder", makeRandomColor(), false));
-		users.add(new User(4, "sweet", makeRandomColor(), false));
+		users.add(new User(1, "jessy", Color.makeRandom(), true));
+		users.add(new User(2, "smoke", Color.makeRandom(), false));
+		users.add(new User(3, "ryder", Color.makeRandom(), false));
+		users.add(new User(4, "sweet", Color.makeRandom(), false));
 		
 		conversations = new ArrayList<>();
 		conversations.add(new Conversation(1, "Conversation 1", true, "Lorem ipsum dolor sit amet, consectetur"));
@@ -98,7 +92,7 @@ public class MockApiController implements ApiController {
 		}
 		
 		// Create the user and add them
-		users.add(new User(users.size(), pseudo, pass, false));
+		users.add(new User(users.size(), pseudo, Color.makeRandom(), false));
 		cb.onResponse(null);
 	}
 	
@@ -155,6 +149,13 @@ public class MockApiController implements ApiController {
 				return;
 			}
 		}
+	}
+	
+	@Override
+	public void updateAccountInfo(String login, Color color, Callback<Void> cb){
+		currentUser.setPseudo(login);
+		currentUser.setColor(color);
+		cb.onResponse(null);
 	}
 	
 	@Override

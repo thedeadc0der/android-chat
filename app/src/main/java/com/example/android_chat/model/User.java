@@ -3,10 +3,10 @@ package com.example.android_chat.model;
 public class User {
 	private int id;
 	private String pseudo;
-	private String color;
+	private Color color;
 	private boolean admin;
 	
-	public User(int id, String pseudo, String color, boolean admin){
+	public User(int id, String pseudo, Color color, boolean admin){
 		this.id = id;
 		this.pseudo = pseudo;
 		this.color = color;
@@ -29,11 +29,11 @@ public class User {
 		this.pseudo = pseudo;
 	}
 	
-	public String getColor(){
+	public Color getColor(){
 		return color;
 	}
 	
-	public void setColor(String color){
+	public void setColor(Color color){
 		this.color = color;
 	}
 	

@@ -1,5 +1,6 @@
 package com.example.android_chat.api;
 
+import com.example.android_chat.model.Color;
 import com.example.android_chat.model.Conversation;
 import com.example.android_chat.model.Message;
 import com.example.android_chat.model.User;
@@ -23,4 +24,5 @@ public interface ApiController {
 	void listMessagesFrom(Conversation conversation, Message lastMessage, Callback<List<Message>> cb);
 	void sendMessage(Conversation conversation, String msg, Callback<Message> cb);
 	void deleteMessage(Message message, Callback<Void> cb);
+	void updateAccountInfo(String login, Color color, Callback<Void> cb);
 }
