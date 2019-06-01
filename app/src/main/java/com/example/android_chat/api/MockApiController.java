@@ -52,10 +52,12 @@ public class MockApiController implements ApiController {
 		conversations.add(new Conversation(17, "And another one", false, "at some point it'll bite the dust"));
 		
 		messages = new ArrayList<>();
+		/*
 		messages.add(new Message(1, users.get(0), "Hello"));
 		messages.add(new Message(2, users.get(1), "YOU PICKED THE WRONG HOUSE"));
 		messages.add(new Message(3, users.get(2), "I'm a genius"));
 		messages.add(new Message(4, users.get(3), "I'm told cheese has to be earned…"));
+		*/
 	}
 	
 	@Override

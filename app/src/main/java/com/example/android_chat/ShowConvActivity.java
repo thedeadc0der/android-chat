@@ -1,5 +1,7 @@
 package com.example.android_chat;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
@@ -10,6 +12,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -50,10 +53,12 @@ class ConversationMessageAdapter extends RecyclerView.Adapter<ConversationMessag
         }
     }
     
+    private ShowConvActivity activity;
     private List<Message> messages;
     private User user;
     
-    public ConversationMessageAdapter(List<Message> messages, User user){
+    public ConversationMessageAdapter(ShowConvActivity activity, List<Message> messages, User user){
+        this.activity = activity;
         this.messages = messages;
         this.user = user;
     }
@@ -67,7 +72,15 @@ class ConversationMessageAdapter extends RecyclerView.Adapter<ConversationMessag
     @Override
     public void onBindViewHolder(CMViewHolder holder, int position){
         final Message message = messages.get(position);
+        
         holder.setMessage(message, message.getAuthor().equals(user));
+        holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v){
+                activity.onMessageLongClick(message);
+                return true;
+            }
+        });
     }
     
     @Override
@@ -153,8 +166,8 @@ public class ShowConvActivity extends CommonActivity implements View.OnClickList
             @Override
             public void onResponse(List<Message> obj){
                 messages = new ArrayList<>(obj);
-                lastMessage = obj.get(obj.size() - 1);
-                adapter = new ConversationMessageAdapter(obj, user);
+                lastMessage = obj.isEmpty() ? null : obj.get(obj.size() - 1);
+                adapter = new ConversationMessageAdapter(ShowConvActivity.this, obj, user);
                 messageList.setAdapter(adapter);
             }
     
@@ -173,6 +186,11 @@ public class ShowConvActivity extends CommonActivity implements View.OnClickList
     }
     
     private void retrieveNewMessages(){
+        if( lastMessage == null ){
+            reloadMessages();
+            return;
+        }
+        
         gs.getApiController().listMessagesFrom(conversation, lastMessage, new ApiController.Callback<List<Message>>() {
             @Override
             public void onResponse(List<Message> msg){
@@ -186,6 +204,54 @@ public class ShowConvActivity extends CommonActivity implements View.OnClickList
                 gs.alerter("Erreur: " + err.getMessage());
             }
         });
+    }
+    
+    private void askToDeleteMessage(final Message msg){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Suppression");
+        builder.setMessage("Voulez-vous vraiment supprimer ce message?");
+        builder.setCancelable(true);
+        builder.setPositiveButton("Supprimer", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which){
+                deleteMessage(msg);
+            }
+        });
+        builder.create().show();
+    }
+    
+    private void deleteMessage(final Message msg){
+        gs.getApiController().deleteMessage(msg, new ApiController.Callback<Void>() {
+            @Override
+            public void onResponse(Void obj){
+                messages.remove(msg);
+                adapter.notifyDataSetChanged();
+            }
+            
+            @Override
+            public void onError(Error err){
+                gs.alerter("Erreur: " + err.getMessage());
+            }
+        });
+    }
+    
+    void onMessageLongClick(final Message msg){
+        final String [] options = {"Supprimer"};
+    
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Message");
+        builder.setItems(options, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which){
+                switch(which){
+                    case 0:
+                        askToDeleteMessage(msg);
+                        break;
+                }
+            }
+        });
+    
+        builder.create().show();
     }
     
     @Override
