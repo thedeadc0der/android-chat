@@ -8,6 +8,7 @@ import android.widget.Toast;
 
 import com.example.android_chat.api.ApiController;
 import com.example.android_chat.api.MockApiController;
+import com.example.android_chat.api.VolleyApiController;
 
 import java.net.CookieHandler;
 import java.net.CookieManager;
@@ -19,7 +20,8 @@ public class GlobalState extends Application {
 	@Override
 	public void onCreate(){
 		super.onCreate();
-		apiController = new MockApiController();
+		//apiController = new MockApiController();
+		apiController = new VolleyApiController(getApplicationContext());
 	}
 	
 	/**
