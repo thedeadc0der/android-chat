@@ -20,6 +20,7 @@ public class SignupActivity extends CommonActivity implements View.OnClickListen
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_signup);
 		getSupportActionBar().setTitle("Inscription");
+		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		
 		loginField = findViewById(R.id.signup_edtLogin);
 		passField = findViewById(R.id.signup_edtPass);
@@ -55,5 +56,11 @@ public class SignupActivity extends CommonActivity implements View.OnClickListen
 				
 				break;
 		}
+	}
+	
+	@Override
+	public boolean onSupportNavigateUp(){
+		finish();
+		return true;
 	}
 }

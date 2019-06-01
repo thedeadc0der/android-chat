@@ -130,6 +130,7 @@ public class ShowConvActivity extends CommonActivity implements View.OnClickList
         
         // Load the messages
         getSupportActionBar().setTitle(conversation.getTheme());
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         reloadMessages();
     }
     
@@ -280,5 +281,11 @@ public class ShowConvActivity extends CommonActivity implements View.OnClickList
                 
                 break;
         }
+    }
+    
+    @Override
+    public boolean onSupportNavigateUp(){
+        finish();
+        return true;
     }
 }
