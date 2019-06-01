@@ -16,6 +16,7 @@ public interface ApiController {
 	User getCurrentUser();
 	
 	void login(String login, String pass, Callback<Void> cb);
+	void logout(Callback<Void> cb);
 	void signup(String pseudo, String pass, Callback<Void> cb);
 	void listConversations(Callback<List<Conversation>> cb);
 	void createConversation(String theme, Callback<Conversation> cb);
@@ -25,4 +26,5 @@ public interface ApiController {
 	void sendMessage(Conversation conversation, String msg, Callback<Message> cb);
 	void deleteMessage(Message message, Callback<Void> cb);
 	void updateAccountInfo(String login, Color color, Callback<Void> cb);
+	void deleteUser(User user, Callback<Void> cb);
 }

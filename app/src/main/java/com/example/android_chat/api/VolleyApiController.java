@@ -10,6 +10,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.android_chat.model.Color;
 import com.example.android_chat.model.Conversation;
 import com.example.android_chat.model.Message;
 import com.example.android_chat.model.User;
@@ -359,45 +360,40 @@ public class VolleyApiController implements ApiController {
     @Override
     public void listMessages(final Conversation conversation, final Callback<List<Message>> cb) {
         String url = prefixURL + "conversations/"+conversation.getId();
-
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null,
-                new Response.Listener<JSONObject>()
+        
+        JsonArrayRequest request = new JsonArrayRequest(Request.Method.GET, url, null,
+                new Response.Listener<JSONArray>()
                 {
                     @Override
-                    public void onResponse(JSONObject response)
+                    public void onResponse(JSONArray messages)
                     {
-                       if(response != null){
-                           try {
-                               JSONArray messages = null;
-                               messages = response.getJSONArray("messages");
-                               List<Message> listMessages = new ArrayList<Message>();
-                               for(int i=0;i<messages.length();i++) {
-
-                                   //Find messages infos
-                                   JSONObject msg = (JSONObject) messages.get(i);
-                                   int id = msg.getInt("id");
-                                   String contenu =  msg.getString("contenu");
-
-                                   //Find auteur infos
-                                   JSONObject auteurInfos = response.getJSONObject("autheur");
-                                   int idAuteur = auteurInfos.getInt("id");
-                                   String pseudo = auteurInfos.getString("pseudo");
-                                   String color = auteurInfos.getString("couleur");
-                                   boolean admin = ((String) auteurInfos.getString("admin")).contentEquals("1");
-
-                                   //Create user & message
-                                   User user = new User(idAuteur, pseudo,color,admin);
-                                   Message message = new Message(id,user,contenu);
-
-                                   listMessages.add(message);
-                               }
-
-                               cb.onResponse(listMessages);
-
-                           } catch (JSONException e) {
-                               e.printStackTrace();
-                           }
-                       }
+                        try {
+                            List<Message> listMessages = new ArrayList<Message>();
+                            for(int i=0;i<messages.length();i++) {
+                                
+                                //Find messages infos
+                                JSONObject msg = (JSONObject) messages.get(i);
+                                int id = msg.getInt("id");
+                                String contenu =  msg.getString("contenu");
+                                
+                                //Find auteur infos
+                                JSONObject auteurInfos = msg.getJSONObject("auteur");
+                                int idAuteur = auteurInfos.getInt("id");
+                                String pseudo = auteurInfos.getString("pseudo");
+                                String color = auteurInfos.getString("couleur");
+                                boolean admin = ((String) auteurInfos.getString("admin")).contentEquals("1");
+                                
+                                //Create user & message
+                                User user = new User(idAuteur, pseudo,color,admin);
+                                Message message = new Message(id,user,contenu);
+                                
+                                listMessages.add(message);
+                            }
+                            
+                            cb.onResponse(listMessages);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
                     }
                 },
                 new Response.ErrorListener(){
@@ -427,7 +423,7 @@ public class VolleyApiController implements ApiController {
      * @param cb
      */
     @Override
-    public void listMessagesFromId(Conversation conversation, Message lastMessage, final Callback<List<Message>> cb) {
+    public void listMessagesFrom(Conversation conversation, Message lastMessage, final Callback<List<Message>> cb) {
         String url = prefixURL + "refresh/"+conversation.getId()+"/"+ lastMessage.getId();
 
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null,
@@ -449,7 +445,7 @@ public class VolleyApiController implements ApiController {
                                     String contenu =  msg.getString("contenu");
 
                                     //Find auteur infos
-                                    JSONObject auteurInfos = response.getJSONObject("autheur");
+                                    JSONObject auteurInfos = msg.getJSONObject("auteur");
                                     int idAuteur = auteurInfos.getInt("id");
                                     String pseudo = auteurInfos.getString("pseudo");
                                     String color = auteurInfos.getString("couleur");
@@ -600,5 +596,14 @@ public class VolleyApiController implements ApiController {
 
         volleyRequestQueue.add(request);
     }
-
+    
+    @Override
+    public void deleteConversation(Conversation conversation, Callback<Void> cb){
+    
+    }
+    
+    @Override
+    public void updateAccountInfo(String login, Color color, Callback<Void> cb){
+    
+    }
 }

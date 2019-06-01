@@ -169,4 +169,15 @@ public class MockApiController implements ApiController {
 		
 		cb.onResponse(new ArrayList<Message>());
 	}
+	
+	@Override
+	public void logout(Callback<Void> cb){
+		currentUser = null;
+		cb.onResponse(null);
+	}
+	
+	@Override
+	public void deleteUser(User user, Callback<Void> cb){
+	
+	}
 }

@@ -13,6 +13,10 @@ public class User {
 		this.admin = admin;
 	}
 	
+	public User(int id, String pseudo, String color, boolean admin){
+		this(id, pseudo, new Color(color), admin);
+	}
+	
 	public int getId(){
 		return id;
 	}
