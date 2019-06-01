@@ -33,11 +33,20 @@ public class VolleyApiController implements ApiController {
     public RequestQueue volleyRequestQueue;
     private User currentUser = null;
 
+    /**
+     * Constructeur de VolleyApiController
+     * Il reçoit le contexte de l'application pour créer la queue de requête
+     * @param context
+     */
     public VolleyApiController(Context context){
         //Création de la queue de requête
         volleyRequestQueue = Volley.newRequestQueue(context);
     }
 
+    /**
+     * Retourne l'utilisateur courant
+     * @return
+     */
     public User getCurrentUser(){return currentUser;}
 
     /**
@@ -482,7 +491,6 @@ public class VolleyApiController implements ApiController {
     }
 
     /**
-     * TODO Récupérer l'id du message depuis l'API
      * Ajoute un nouveau message à la conversation
      * @param conversation
      * @param msg
@@ -494,7 +502,6 @@ public class VolleyApiController implements ApiController {
 
         //Définition des paramètres
         Map<String, String> jsonParams = new HashMap<>();
-        jsonParams.put("idAuteur", String.valueOf(currentUser.getId()));
         jsonParams.put("content", msg);
 
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, url, new JSONObject(jsonParams),
@@ -504,8 +511,29 @@ public class VolleyApiController implements ApiController {
                     public void onResponse(JSONObject response)
                     {
                         if(response != null){
-                            Message message = new Message(0, currentUser,msg);
-                            cb.onResponse(message);
+                            try {
+                                JSONObject newMessage = response.getJSONObject("insertedMessage");
+                                JSONObject auteurInfos = newMessage.getJSONObject("auteur");
+
+                                //Auteur infos
+                                int idAuteur = auteurInfos.getInt("id");
+                                String pseudo = auteurInfos.getString("pseudo");
+                                String couleur = auteurInfos.getString("couleur");
+                                boolean admin = ((String) auteurInfos.getString("admin")).contentEquals("1");
+
+                                //Message infos
+                                int idMessage = newMessage.getInt("id");
+                                String contenu = newMessage.getString("contenu");
+
+                                //User & Message
+                                User user = new User(idAuteur,pseudo,couleur,admin);
+                                Message message = new Message(idMessage,user,contenu);
+
+                                cb.onResponse(message);
+
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
                         }
                     }
                 },
