@@ -82,4 +82,22 @@
     <string name="actConvList_delete_action">Supprimer</string>
     <string name="actConvList_action_title">Conversation "%s"</string>
     <string name="actConvList_action_delete">Supprimer</string>
+
+    <!-- ApiController errors -->
+    <string name="err_network">erreur réseau</string>
+    <string name="err_bad_json">JSON invalide reçu</string>
+    <string name="err_bad_credentials">mauvais identifiants</string>
+    <string name="err_signup">inscription impossible</string>
+    <string name="err_logout">erreur de déconnexion</string>
+    <string name="err_delete_account">suppression impossible</string>
+    <string name="err_list_conv">impossible de lister les conversations</string>
+    <string name="err_create_conv">impossible de créer la conversation</string>
+    <string name="err_list_msg">impossible de récupérer les messages</string>
+    <string name="err_send_msg">impossible d\'envoyer le message</string>
+    <string name="err_delete_msg">impossible de supprimer le message</string>
+    <string name="err_delete_conv">impossible de supprimer la conversation</string>
+    <string name="err_update_account">impossible d\'enregistrer les changements</string>
+    <string name="err_no_response">aucune réponse reçue</string>
+    <string name="err_name_taken">pseudo déjà utilisé</string>
+    <string name="err_conv_exists">une conversation avec ce thème existe déjà</string>
 </resources>

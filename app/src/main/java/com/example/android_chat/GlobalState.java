@@ -28,7 +28,7 @@ public class GlobalState extends Application {
 		SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
 		
 		if( sharedPrefs.getBoolean("mockApi", false) ){
-			apiController = new MockApiController();
+			apiController = new MockApiController(getApplicationContext());
 		} else {
 			final String apiBase = sharedPrefs.getString("urlData", "http://10.0.2.2:5000/");
 			apiController = new VolleyApiController(getApplicationContext(), apiBase);

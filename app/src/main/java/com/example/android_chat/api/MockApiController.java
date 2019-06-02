@@ -1,5 +1,9 @@
 package com.example.android_chat.api;
 
+import android.content.Context;
+import android.content.res.Resources;
+
+import com.example.android_chat.R;
 import com.example.android_chat.model.Color;
 import com.example.android_chat.model.Conversation;
 import com.example.android_chat.model.Message;
@@ -9,13 +13,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MockApiController implements ApiController {
+	private Resources resources;
 	private List<User> users;
 	private List<Conversation> conversations;
 	private List<Message> messages;
 	
 	private User currentUser = null;
 	
-	public MockApiController(){
+	public MockApiController(Context context){
+		this.resources = context.getResources();
 		populateData();
 	}
 	
@@ -46,12 +52,10 @@ public class MockApiController implements ApiController {
 		conversations.add(new Conversation(17, "And another one", false, "at some point it'll bite the dust"));
 		
 		messages = new ArrayList<>();
-		/*
 		messages.add(new Message(1, users.get(0), "Hello"));
 		messages.add(new Message(2, users.get(1), "YOU PICKED THE WRONG HOUSE"));
 		messages.add(new Message(3, users.get(2), "I'm a genius"));
 		messages.add(new Message(4, users.get(3), "I'm told cheese has to be earned…"));
-		*/
 	}
 	
 	@Override
@@ -78,7 +82,7 @@ public class MockApiController implements ApiController {
 		}
 		
 		// If they don't, give out an error
-		cb.onError(new Error("bad credentials"));
+		cb.onError(new Error(resources.getString(R.string.err_bad_credentials)));
 	}
 	
 	@Override
@@ -88,7 +92,7 @@ public class MockApiController implements ApiController {
 		// Make sure no other user has that name
 		for(User curr: users){
 			if( curr.getPseudo().equals(pseudo) )
-				cb.onError(new Error("name already taken"));
+				cb.onError(new Error(resources.getString(R.string.err_name_taken)));
 		}
 		
 		// Create the user and add them
@@ -107,7 +111,7 @@ public class MockApiController implements ApiController {
 		assert isLoggedIn();
 		for(Conversation curr: conversations){
 			if( curr.getTheme().equals(theme) )
-				throw new Error("theme already exists");
+				cb.onError(new Error(resources.getString(R.string.err_conv_exists)));
 		}
 		
 		Conversation conv = new Conversation(conversations.size(), theme, true, "(conversation vide)");
@@ -117,6 +121,7 @@ public class MockApiController implements ApiController {
 	
 	@Override
 	public void deleteConversation(Conversation conversation, Callback<Void> cb){
+		assert isLoggedIn();
 		for(int i=0; i < conversations.size(); ++i){
 			if( conversations.get(i).getId() == conversation.getId() ){
 				conversations.remove(i);
@@ -142,6 +147,7 @@ public class MockApiController implements ApiController {
 	
 	@Override
 	public void deleteMessage(Message message, Callback<Void> cb){
+		assert isLoggedIn();
 		for(int i=0; i < messages.size(); ++i){
 			if( messages.get(i).getId() == message.getId() ){
 				messages.remove(i);
@@ -153,6 +159,7 @@ public class MockApiController implements ApiController {
 	
 	@Override
 	public void updateAccountInfo(String login, Color color, Callback<Void> cb){
+		assert isLoggedIn();
 		currentUser.setPseudo(login);
 		currentUser.setColor(color);
 		cb.onResponse(null);
@@ -160,6 +167,7 @@ public class MockApiController implements ApiController {
 	
 	@Override
 	public void listMessagesFrom(Conversation conversation, Message lastMessage, Callback<List<Message>> cb){
+		assert isLoggedIn();
 		for(int i=0; i < messages.size(); ++i){
 			if( messages.get(i).getId() == lastMessage.getId() ){
 				cb.onResponse(messages.subList(i, messages.size()));
@@ -172,12 +180,13 @@ public class MockApiController implements ApiController {
 	
 	@Override
 	public void logout(Callback<Void> cb){
+		assert isLoggedIn();
 		currentUser = null;
 		cb.onResponse(null);
 	}
 	
 	@Override
 	public void deleteUser(User user, Callback<Void> cb){
-	
+		cb.onError(new Error(resources.getString(R.string.err_delete_account)));
 	}
 }

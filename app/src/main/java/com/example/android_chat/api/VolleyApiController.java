@@ -1,6 +1,7 @@
 package com.example.android_chat.api;
 
 import android.content.Context;
+import android.content.res.Resources;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -10,6 +11,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.android_chat.R;
 import com.example.android_chat.model.Color;
 import com.example.android_chat.model.Conversation;
 import com.example.android_chat.model.Message;
@@ -26,6 +28,7 @@ import java.util.Map;
 
 public class VolleyApiController implements ApiController {
     private String prefixURL;
+    private Resources resources;
 
     /**
      * Attributs
@@ -40,15 +43,18 @@ public class VolleyApiController implements ApiController {
      * @param context
      */
     public VolleyApiController(Context context, String prefixURL){
-        volleyRequestQueue = Volley.newRequestQueue(context);
+        this.volleyRequestQueue = Volley.newRequestQueue(context);
         this.prefixURL = prefixURL;
+        this.resources = context.getResources();
     }
 
     /**
      * Retourne l'utilisateur courant
      * @return
      */
-    public User getCurrentUser(){return currentUser;}
+    public User getCurrentUser(){
+        return currentUser;
+    }
 
     /**
      * Connexion à l'application
@@ -70,7 +76,7 @@ public class VolleyApiController implements ApiController {
             public void onResponse(JSONObject response){
                 try {
                     if( !response.getString("status").equals("success") ){
-                        cb.onError(new Error("erreur serveur"));
+                        cb.onError(new Error(resources.getString(R.string.err_network)));
                         return;
                     }
         
@@ -88,13 +94,13 @@ public class VolleyApiController implements ApiController {
         
                     cb.onResponse(null);
                 } catch (JSONException e) {
-                    cb.onError(new Error("json invalide"));
+                    cb.onError(new Error(resources.getString(R.string.err_bad_json)));
                 }
             }
     
             @Override
             public void onError(Throwable exc){
-                cb.onError(new Error("mauvais identifiants"));
+                cb.onError(new Error(resources.getString(R.string.err_bad_credentials)));
             }
         });
     }
@@ -119,20 +125,20 @@ public class VolleyApiController implements ApiController {
             public void onResponse(JSONObject response){
                 try {
                     if( !response.getString("status").equals("success") ){
-                        cb.onError(new Error("erreur serveur"));
+                        cb.onError(new Error(resources.getString(R.string.err_network)));
                         return;
                     }
     
                     // XXX: This method used to store the access token, but it shouldn't have?
                     cb.onResponse(null);
                 } catch (JSONException e) {
-                    cb.onError(new Error("json invalide"));
+                    cb.onError(new Error(resources.getString(R.string.err_bad_json)));
                 }
             }
     
             @Override
             public void onError(Throwable exc){
-                cb.onError(new Error("inscription impossible"));
+                cb.onError(new Error(resources.getString(R.string.err_signup)));
             }
         });
     }
@@ -153,7 +159,7 @@ public class VolleyApiController implements ApiController {
     
             @Override
             public void onError(Throwable exc){
-                cb.onError(new Error("erreur de déconnexion"));
+                cb.onError(new Error(resources.getString(R.string.err_logout)));
             }
         });
     }
@@ -173,7 +179,7 @@ public class VolleyApiController implements ApiController {
     
             @Override
             public void onError(Throwable exc){
-                cb.onError(new Error("suppression impossible"));
+                cb.onError(new Error(resources.getString(R.string.err_delete_account)));
             }
         });
     }
@@ -205,13 +211,13 @@ public class VolleyApiController implements ApiController {
     
                     cb.onResponse(conversations);
                 } catch(JSONException ex){
-                    cb.onError(new Error("json invalide"));
+                    cb.onError(new Error(resources.getString(R.string.err_bad_json)));
                 }
             }
             
             @Override
             public void onError(Throwable exc){
-                cb.onError(new Error("Impossible de lister les conversations"));
+                cb.onError(new Error(resources.getString(R.string.err_list_conv)));
             }
         });
     }
@@ -237,13 +243,13 @@ public class VolleyApiController implements ApiController {
                             theme, true, "")
                     );
                 } catch(JSONException ex){
-                    cb.onError(new Error("json invalide"));
+                    cb.onError(new Error(resources.getString(R.string.err_bad_json)));
                 }
             }
     
             @Override
             public void onError(Throwable exc){
-                cb.onError(new Error("Impossible de créer la conversation"));
+                cb.onError(new Error(resources.getString(R.string.err_create_conv)));
             }
         });
     }
@@ -290,13 +296,13 @@ public class VolleyApiController implements ApiController {
                     }
                     cb.onResponse(messages);
                 } catch(JSONException ex){
-                    cb.onError(new Error("json invalide"));
+                    cb.onError(new Error(resources.getString(R.string.err_bad_json)));
                 }
             }
     
             @Override
             public void onError(Throwable exc){
-                cb.onError(new Error("Impossible de récupérer les messages"));
+                cb.onError(new Error(resources.getString(R.string.err_list_msg)));
             }
         });
     }
@@ -346,13 +352,13 @@ public class VolleyApiController implements ApiController {
                     
                     cb.onResponse(result);
                 } catch(JSONException ex){
-                    cb.onError(new Error("json invalide"));
+                    cb.onError(new Error(resources.getString(R.string.err_bad_json)));
                 }
             }
     
             @Override
             public void onError(Throwable exc){
-                cb.onError(new Error("impossible de récupérer les messages"));
+                cb.onError(new Error(resources.getString(R.string.err_list_msg)));
             }
         });
     }
@@ -392,13 +398,13 @@ public class VolleyApiController implements ApiController {
                             jsonMessage.getString("contenu")
                     ));
                 } catch(JSONException ex){
-                    cb.onError(new Error("json invalide"));
+                    cb.onError(new Error(resources.getString(R.string.err_bad_json)));
                 }
             }
     
             @Override
             public void onError(Throwable exc){
-                cb.onError(new Error("impossible d'envoyer le message"));
+                cb.onError(new Error(resources.getString(R.string.err_send_msg)));
             }
         });
     }
@@ -418,7 +424,7 @@ public class VolleyApiController implements ApiController {
     
             @Override
             public void onError(Throwable exc){
-                cb.onError(new Error("impossible de supprimer le message"));
+                cb.onError(new Error(resources.getString(R.string.err_delete_msg)));
             }
         });
     }
@@ -433,7 +439,7 @@ public class VolleyApiController implements ApiController {
         
             @Override
             public void onError(Throwable exc){
-                cb.onError(new Error("impossible de supprimer la conversation"));
+                cb.onError(new Error(resources.getString(R.string.err_delete_conv)));
             }
         });
     }
@@ -454,7 +460,7 @@ public class VolleyApiController implements ApiController {
     
             @Override
             public void onError(Throwable exc){
-                cb.onError(new Error("impossible d'enregistrer les changements"));
+                cb.onError(new Error(resources.getString(R.string.err_update_account)));
             }
         });
     }
@@ -471,7 +477,7 @@ public class VolleyApiController implements ApiController {
                     @Override
                     public void onResponse(JSONObject response){
                         if (response == null){
-                            cb.onError(new Error("aucune réponse"));
+                            cb.onError(new Error(resources.getString(R.string.err_no_response)));
                             return;
                         }
             
@@ -481,7 +487,7 @@ public class VolleyApiController implements ApiController {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error){
-                        cb.onError(new Error("erreur réseau"));
+                        cb.onError(new Error(resources.getString(R.string.err_network)));
                     }
                 }){
             @Override
@@ -497,7 +503,7 @@ public class VolleyApiController implements ApiController {
                     @Override
                     public void onResponse(JSONArray response){
                         if (response == null){
-                            cb.onError(new Error("aucune réponse"));
+                            cb.onError(new Error(resources.getString(R.string.err_no_response)));
                             return;
                         }
                         
@@ -507,7 +513,7 @@ public class VolleyApiController implements ApiController {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error){
-                        cb.onError(new Error("erreur réseau"));
+                        cb.onError(new Error(resources.getString(R.string.err_no_response)));
                     }
                 }){
             @Override
