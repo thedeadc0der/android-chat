@@ -78,4 +78,11 @@
         android:layout_marginTop="16dp"
         android:text="Enregistrer" />
 
+    <Button
+        android:id="@+id/account_btnDelete"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Supprimer mon Compte"
+        style="@style/Widget.MaterialComponents.Button.TextButton" />
+
 </LinearLayout>

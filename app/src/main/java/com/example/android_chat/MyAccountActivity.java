@@ -1,6 +1,7 @@
 package com.example.android_chat;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
@@ -19,6 +20,7 @@ public class MyAccountActivity extends CommonActivity implements SeekBar.OnSeekB
 	private SeekBar colorBlue;
 	private View colorView;
 	private Button saveButton;
+	private Button deleteButton;
 	
 	private void updateColor(){
 		Color color = new Color();
@@ -59,6 +61,8 @@ public class MyAccountActivity extends CommonActivity implements SeekBar.OnSeekB
 		colorBlue.setOnSeekBarChangeListener(this);
 		saveButton = findViewById(R.id.account_btnSave);
 		saveButton.setOnClickListener(this);
+		deleteButton = findViewById(R.id.account_btnDelete);
+		deleteButton.setOnClickListener(this);
 	}
 	
 	@Override
@@ -114,6 +118,21 @@ public class MyAccountActivity extends CommonActivity implements SeekBar.OnSeekB
 				});
 				
 				break;
+				
+			case R.id.account_btnDelete:
+				android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(this);
+				builder.setTitle("Suppression");
+				builder.setMessage("Voulez-vous vraiment supprimer votre compte?\nCette opération est irréversible!");
+				builder.setCancelable(true);
+				builder.setPositiveButton("Supprimer", new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which){
+						deleteAccount();
+					}
+				});
+				builder.create().show();
+				
+				break;
 		}
 	}
 	
@@ -128,5 +147,21 @@ public class MyAccountActivity extends CommonActivity implements SeekBar.OnSeekB
 	
 	@Override
 	public void onStopTrackingTouch(SeekBar seekBar){
+	}
+	
+	private void deleteAccount(){
+		gs.getApiController().deleteUser(gs.getApiController().getCurrentUser(), new ApiController.Callback<Void>() {
+			@Override
+			public void onResponse(Void obj){
+				Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+				intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+				startActivity(intent);
+			}
+			
+			@Override
+			public void onError(Error err){
+				gs.alerter("Erreur: " + err.getMessage());
+			}
+		});
 	}
 }
