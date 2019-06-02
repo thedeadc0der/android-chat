@@ -5,9 +5,9 @@
     android:layout_height="match_parent"
     android:orientation="horizontal">
 
-    <com.example.android_chat.ColorView
+    <View
         android:id="@+id/conv_color"
-        android:layout_width="100sp"
+        android:layout_width="8dp"
         android:layout_height="match_parent"
         android:layout_marginRight="16px" />
 

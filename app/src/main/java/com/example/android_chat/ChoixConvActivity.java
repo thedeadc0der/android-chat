@@ -42,8 +42,11 @@ class ConversationListAdapter extends ArrayAdapter {
         TextView convLastMsg = rowView.findViewById(R.id.conv_lblLastMsg);
         convLastMsg.setText(conversation.getLastMessage());
         
-        ColorView convColor = rowView.findViewById(R.id.conv_color);
-        convColor.setColor(conversation.isActive() ? "#ff4db6ac" : "#ffbdbdbd");
+        View convColor = rowView.findViewById(R.id.conv_color);
+        convColor.setBackgroundColor(conversation.isActive()
+		        ? activity.getResources().getColor(R.color.active_conversation)
+		        : activity.getResources().getColor(R.color.inactive_conversation));
+        
         return rowView;
     }
 }
