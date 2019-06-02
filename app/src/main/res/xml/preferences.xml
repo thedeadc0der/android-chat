@@ -8,5 +8,10 @@
 
     <PreferenceCategory android:key="api" android:title="@string/pref_api" android:summary="@string/prefsum_api">
         <EditTextPreference android:title="@string/pref_serverUrl" android:key="urlData" android:defaultValue="http://10.0.2.2:5000/" android:summary="@string/prefsum_serverUrl"/>
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="mockApi"
+            android:summary="@string/prefsum_apiMock"
+            android:title="@string/pref_apiMock" />
     </PreferenceCategory>
 </PreferenceScreen>

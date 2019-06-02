@@ -25,11 +25,11 @@ import java.util.List;
 import java.util.Map;
 
 public class VolleyApiController implements ApiController {
+    private String prefixURL;
 
     /**
      * Attributs
      */
-    private static final String prefixURL = "http://192.168.1.20:5000/";
     private String accessToken;
     public RequestQueue volleyRequestQueue;
     private User currentUser = null;
@@ -39,9 +39,9 @@ public class VolleyApiController implements ApiController {
      * Il reçoit le contexte de l'application pour créer la queue de requête
      * @param context
      */
-    public VolleyApiController(Context context){
-        //Création de la queue de requête
+    public VolleyApiController(Context context, String prefixURL){
         volleyRequestQueue = Volley.newRequestQueue(context);
+        this.prefixURL = prefixURL;
     }
 
     /**

@@ -1,10 +1,12 @@
 package com.example.android_chat;
 
 import android.app.Application;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkCapabilities;
 import android.net.NetworkInfo;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -22,8 +24,15 @@ public class GlobalState extends Application {
 	@Override
 	public void onCreate(){
 		super.onCreate();
-		//apiController = new MockApiController();
-		apiController = new VolleyApiController(getApplicationContext());
+		
+		SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+		
+		if( sharedPrefs.getBoolean("mockApi", false) ){
+			apiController = new MockApiController();
+		} else {
+			final String apiBase = sharedPrefs.getString("urlData", "http://10.0.2.2:5000/");
+			apiController = new VolleyApiController(getApplicationContext(), apiBase);
+		}
 	}
 	
 	/**
