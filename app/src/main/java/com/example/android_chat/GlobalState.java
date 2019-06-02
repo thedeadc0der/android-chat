@@ -2,6 +2,8 @@ package com.example.android_chat;
 
 import android.app.Application;
 import android.net.ConnectivityManager;
+import android.net.Network;
+import android.net.NetworkCapabilities;
 import android.net.NetworkInfo;
 import android.util.Log;
 import android.widget.Toast;
@@ -40,33 +42,29 @@ public class GlobalState extends Application {
 	 *
 	 * @return
 	 */
-	public boolean verifReseau(){
-		// On vérifie si le réseau est disponible,
-		// si oui on change le statut du bouton de connexion
-		ConnectivityManager cnMngr = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
-		NetworkInfo netInfo = cnMngr.getActiveNetworkInfo();
+	public enum NetworkType {
+		None,
+		MobileData,
+		Wifi,
+		Other,
+	}
+	
+	public NetworkType getNetworkType(){
+		NetworkInfo netInfo = ((ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE)).getActiveNetworkInfo();
 		
-		String sType = "Aucun réseau détecté";
-		Boolean bStatut = false;
-		if (netInfo != null){
-			NetworkInfo.State netState = netInfo.getState();
-			
-			if (netState.compareTo(NetworkInfo.State.CONNECTED) == 0){
-				bStatut = true;
-				int netType = netInfo.getType();
-				switch (netType) {
-					case ConnectivityManager.TYPE_MOBILE:
-						sType = "Réseau mobile détecté";
-						break;
-					case ConnectivityManager.TYPE_WIFI:
-						sType = "Réseau wifi détecté";
-						break;
-				}
-			}
+		if( netInfo == null || !netInfo.isConnected() )
+			return NetworkType.None;
+		
+		switch(netInfo.getType()){
+			case ConnectivityManager.TYPE_MOBILE:
+				return NetworkType.MobileData;
+				
+			case ConnectivityManager.TYPE_WIFI:
+				return NetworkType.Wifi;
+				
+			default:
+				return NetworkType.Other;
 		}
-		
-		this.alerter(sType);
-		return bStatut;
 	}
 	
 	public void presentError(Throwable err){

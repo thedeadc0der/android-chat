@@ -20,6 +20,8 @@
     <string name="pref_password">Mot de Passe</string>
     <string name="pref_api">API</string>
     <string name="prefsum_api">Réglages de l\'API</string>
+    <string name="pref_apiMock">Utiliser l\'API Mock</string>
+    <string name="prefsum_apiMock">Utiliser MockApiController au lieu de Volley. Relancez l\'application après changement.</string>
 
     <!-- Login Activity -->
     <string name="actLogin_title">Connexion</string>
@@ -28,6 +30,11 @@
     <string name="actLogin_remember_label">Se Souvenir de Moi</string>
     <string name="actLogin_log_in">Connexion</string>
     <string name="actLogin_sign_up">Créer un Compte</string>
+    <string name="actLogin_network_none">Déconnecté</string>
+    <string name="actLogin_network_mobile">Données Mobiles</string>
+    <string name="actLogin_network_wifi">Wifi</string>
+    <string name="actLogin_network_other">Autre Réseau</string>
+    <string name="actLogin_uses_mock_api_ctrl">Utilise MockApiController</string>
 
     <!-- Signup Activity -->
     <string name="actSignup_title">Inscription</string>

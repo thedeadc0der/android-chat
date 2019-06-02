@@ -8,10 +8,14 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import com.example.android_chat.api.ApiController;
+import com.example.android_chat.api.MockApiController;
 
 public class LoginActivity extends CommonActivity implements View.OnClickListener {
+    private TextView networkLabel;
+    private TextView usesMockApiCtrlLabel;
     private EditText champLogin;
     private EditText champPass;
     private CheckBox champRemember;
@@ -29,6 +33,8 @@ public class LoginActivity extends CommonActivity implements View.OnClickListene
         champRemember = findViewById(R.id.login_cbRemember);
         btnOK = findViewById(R.id.login_btnOK);
         btnSignup = findViewById(R.id.login_btnSignup);
+        networkLabel = findViewById(R.id.login_status);
+        usesMockApiCtrlLabel = findViewById(R.id.login_mockApiCtrl);
 
         champRemember.setOnClickListener(this);
         btnOK.setOnClickListener(this);
@@ -40,7 +46,32 @@ public class LoginActivity extends CommonActivity implements View.OnClickListene
         super.onResume();
 
         // Only enable the "submit" button if we have an internet connection
-        btnOK.setEnabled(gs.verifReseau());
+        GlobalState.NetworkType networkType = gs.getNetworkType();
+        btnOK.setEnabled(networkType != GlobalState.NetworkType.None);
+        
+        switch(gs.getNetworkType()){
+            case None:
+                networkLabel.setText(getResources().getString(R.string.actLogin_network_none));
+                break;
+                
+            case MobileData:
+                networkLabel.setText(getResources().getString(R.string.actLogin_network_mobile));
+                break;
+                
+            case Wifi:
+                networkLabel.setText(getResources().getString(R.string.actLogin_network_wifi));
+                break;
+                
+            case Other:
+                networkLabel.setText(getResources().getString(R.string.actLogin_network_other));
+                break;
+        }
+        
+        // Display a label if we're using the mock ApiController
+	    if( gs.getApiController() instanceof MockApiController )
+	    	usesMockApiCtrlLabel.setVisibility(View.VISIBLE);
+	    else
+		    usesMockApiCtrlLabel.setVisibility(View.GONE);
     }
 
     @Override
