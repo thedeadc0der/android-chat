@@ -41,15 +41,13 @@ class ConversationMessageAdapter extends RecyclerView.Adapter<ConversationMessag
         }
         
         public void setMessage(Message msg, boolean isFromUser){
+            final Resources r = itemView.getContext().getResources();
+            
             authorText.setText(msg.getAuthor().getPseudo());
             contentText.setText(msg.getContent());
-            
-            if( isFromUser ){
-                Resources r = itemView.getContext().getResources();
-                cardView.setCardBackgroundColor(r.getColor(R.color.colorPrimaryDark));
-                authorText.setTextColor(r.getColor(R.color.blanc));
-                contentText.setTextColor(r.getColor(R.color.blanc));
-            }
+            cardView.setCardBackgroundColor(r.getColor(isFromUser ? R.color.colorPrimaryDark : R.color.blanc));
+            authorText.setTextColor(r.getColor(isFromUser ? R.color.blanc : R.color.title));
+            contentText.setTextColor(r.getColor(isFromUser ? R.color.blanc : R.color.text));
         }
     }
     
@@ -87,6 +85,11 @@ class ConversationMessageAdapter extends RecyclerView.Adapter<ConversationMessag
     public int getItemCount(){
         return messages.size();
     }
+    
+    @Override
+    public long getItemId(int position){
+        return messages.get(position).getId();
+    }
 }
 
 public class ShowConvActivity extends CommonActivity implements View.OnClickListener {
@@ -94,7 +97,7 @@ public class ShowConvActivity extends CommonActivity implements View.OnClickList
     private EditText messageText;
     private Button sendButton;
     
-    private RecyclerView.Adapter adapter;
+    private ConversationMessageAdapter adapter;
     private RecyclerView.LayoutManager layoutManager;
     
     private Conversation conversation;
@@ -102,6 +105,7 @@ public class ShowConvActivity extends CommonActivity implements View.OnClickList
     private User user;
     private Message lastMessage;
     private Timer timer;
+    private Handler handler;
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -127,6 +131,7 @@ public class ShowConvActivity extends CommonActivity implements View.OnClickList
         messages = new ArrayList<>();
         
         timer = new Timer();
+        handler = new Handler();
         
         // Load the messages
         getSupportActionBar().setTitle(conversation.getTheme());
@@ -140,8 +145,6 @@ public class ShowConvActivity extends CommonActivity implements View.OnClickList
         
         // We have to use a Handler so retrieveNewMessages is run on the main thread, otherwise
         // it won't be able to change UI elements reliably.
-        final Handler handler = new Handler();
-        
         timer.schedule(new TimerTask() {
             @Override
             public void run(){
@@ -165,11 +168,18 @@ public class ShowConvActivity extends CommonActivity implements View.OnClickList
     private void reloadMessages(){
         gs.getApiController().listMessages(conversation, new ApiController.Callback<List<Message>>() {
             @Override
-            public void onResponse(List<Message> obj){
-                messages = new ArrayList<>(obj);
-                lastMessage = obj.isEmpty() ? null : obj.get(obj.size() - 1);
-                adapter = new ConversationMessageAdapter(ShowConvActivity.this, obj, user);
-                messageList.setAdapter(adapter);
+            public void onResponse(final List<Message> obj){
+                handler.post(new Runnable() {
+                    @Override
+                    public void run(){
+                        messages = new ArrayList<>(obj);
+                        lastMessage = obj.isEmpty() ? null : obj.get(obj.size() - 1);
+                        adapter = new ConversationMessageAdapter(ShowConvActivity.this, messages, user);
+                        adapter.setHasStableIds(true);
+                        messageList.setAdapter(adapter);
+                        messageList.scrollToPosition(messages.size() - 1);
+                    }
+                });
             }
     
             @Override
@@ -194,10 +204,18 @@ public class ShowConvActivity extends CommonActivity implements View.OnClickList
         
         gs.getApiController().listMessagesFrom(conversation, lastMessage, new ApiController.Callback<List<Message>>() {
             @Override
-            public void onResponse(List<Message> msg){
-                messages.addAll(msg);
-                adapter.notifyDataSetChanged();
-                messageList.smoothScrollToPosition(messages.size() - 1);
+            public void onResponse(final List<Message> msg){
+                handler.post(new Runnable() {
+                    @Override
+                    public void run(){
+                        if( !msg.isEmpty() ){
+                            messages.addAll(msg);
+                            lastMessage = messages.get(messages.size() - 1);
+                            adapter.notifyDataSetChanged();
+                            messageList.smoothScrollToPosition(messages.size() - 1);
+                        }
+                    }
+                });
             }
     
             @Override
@@ -225,8 +243,13 @@ public class ShowConvActivity extends CommonActivity implements View.OnClickList
         gs.getApiController().deleteMessage(msg, new ApiController.Callback<Void>() {
             @Override
             public void onResponse(Void obj){
-                messages.remove(msg);
-                adapter.notifyDataSetChanged();
+                handler.post(new Runnable() {
+                    @Override
+                    public void run(){
+                        messages.remove(msg);
+                        adapter.notifyDataSetChanged();
+                    }
+                });
             }
             
             @Override
@@ -234,6 +257,35 @@ public class ShowConvActivity extends CommonActivity implements View.OnClickList
                 gs.alerter("Erreur: " + err.getMessage());
             }
         });
+    }
+    
+    private void sendMessage(){
+        final String content = messageText.getText().toString().trim();
+    
+        if( content.isEmpty() ){
+            gs.alerter("Tapez un message");
+            return;
+        }
+    
+        gs.getApiController().sendMessage(conversation, content, new ApiController.Callback<Message>() {
+            @Override
+            public void onResponse(final Message msg){
+                handler.post(new Runnable() {
+                    @Override
+                    public void run(){
+                        addMessage(msg);
+                        messageText.setText("");
+                    }
+                });
+            }
+        
+            @Override
+            public void onError(Error err){
+                gs.alerter("Erreur: " + err.getMessage());
+            }
+        });
+    
+    
     }
     
     void onMessageLongClick(final Message msg){
@@ -259,26 +311,7 @@ public class ShowConvActivity extends CommonActivity implements View.OnClickList
     public void onClick(View v) {
         switch(v.getId()){
             case R.id.showConv_btnSend:
-                final String content = messageText.getText().toString();
-                
-                if( content.trim().isEmpty() ){
-                    gs.alerter("Tapez un message");
-                    return;
-                }
-                
-                gs.getApiController().sendMessage(conversation, content, new ApiController.Callback<Message>() {
-                    @Override
-                    public void onResponse(Message msg){
-                        addMessage(msg);
-                        messageText.setText("");
-                    }
-    
-                    @Override
-                    public void onError(Error err){
-                        gs.alerter("Erreur: " + err.getMessage());
-                    }
-                });
-                
+                sendMessage();
                 break;
         }
     }
