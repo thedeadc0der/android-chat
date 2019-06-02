@@ -7,20 +7,20 @@
     android:layout_marginTop="8sp"
     android:layout_marginRight="8sp"
     android:layout_marginBottom="8sp"
-    android:gravity="right|center_horizontal"
+    android:gravity="center_horizontal|end"
     android:orientation="vertical">
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
-        android:text="Créer Conversation"
+        android:text="@string/actNewConv_title"
         android:textSize="40sp" />
 
     <android.support.design.widget.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Thème">
+        android:hint="@string/actNewConv_theme_label">
 
         <android.support.design.widget.TextInputEditText
             android:id="@+id/newConv_edtTheme"
@@ -38,5 +38,5 @@
         android:id="@+id/newConv_btnSubmit"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Créer" />
+        android:text="@string/actNewConv_create" />
 </LinearLayout>

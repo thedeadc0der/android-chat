@@ -12,7 +12,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -43,7 +42,7 @@ class ConversationMessageAdapter extends RecyclerView.Adapter<ConversationMessag
         public void setMessage(Message msg, boolean isFromUser){
             final Resources r = itemView.getContext().getResources();
             
-            authorText.setText(msg.getAuthor() != null ? msg.getAuthor().getPseudo() : "(compte supprimé)");
+            authorText.setText(msg.getAuthor() != null ? msg.getAuthor().getPseudo() : r.getString(R.string.actShowConv_deleted_user));
             contentText.setText(msg.getContent());
             cardView.setCardBackgroundColor(r.getColor(isFromUser ? R.color.colorPrimaryDark : R.color.blanc));
             authorText.setTextColor(r.getColor(isFromUser ? R.color.blanc : R.color.title));
@@ -184,7 +183,7 @@ public class ShowConvActivity extends CommonActivity implements View.OnClickList
     
             @Override
             public void onError(Error err){
-                gs.alerter("Erreur: " + err.getMessage());
+                gs.presentError(err);
             }
         });
     }
@@ -220,17 +219,17 @@ public class ShowConvActivity extends CommonActivity implements View.OnClickList
     
             @Override
             public void onError(Error err){
-                gs.alerter("Erreur: " + err.getMessage());
+                gs.presentError(err);
             }
         });
     }
     
     private void askToDeleteMessage(final Message msg){
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Suppression");
-        builder.setMessage("Voulez-vous vraiment supprimer ce message?");
+        builder.setTitle(getResources().getString(R.string.actShowConv_delete_title));
+        builder.setMessage(getResources().getString(R.string.actShowConv_delete_message));
         builder.setCancelable(true);
-        builder.setPositiveButton("Supprimer", new DialogInterface.OnClickListener() {
+        builder.setPositiveButton(getResources().getString(R.string.actShowConv_delete_action), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which){
                 deleteMessage(msg);
@@ -254,7 +253,7 @@ public class ShowConvActivity extends CommonActivity implements View.OnClickList
             
             @Override
             public void onError(Error err){
-                gs.alerter("Erreur: " + err.getMessage());
+                gs.presentError(err);
             }
         });
     }
@@ -263,7 +262,7 @@ public class ShowConvActivity extends CommonActivity implements View.OnClickList
         final String content = messageText.getText().toString().trim();
     
         if( content.isEmpty() ){
-            gs.alerter("Tapez un message");
+            gs.alerter(getResources().getString(R.string.actShowConv_no_message));
             return;
         }
     
@@ -281,7 +280,7 @@ public class ShowConvActivity extends CommonActivity implements View.OnClickList
         
             @Override
             public void onError(Error err){
-                gs.alerter("Erreur: " + err.getMessage());
+                gs.presentError(err);
             }
         });
     
@@ -289,10 +288,10 @@ public class ShowConvActivity extends CommonActivity implements View.OnClickList
     }
     
     void onMessageLongClick(final Message msg){
-        final String [] options = {"Supprimer"};
+        final String [] options = {getResources().getString(R.string.actShowConv_action_delete)};
     
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Message");
+        builder.setTitle(getResources().getString(R.string.actShowConv_action_title));
         builder.setItems(options, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which){

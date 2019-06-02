@@ -72,8 +72,8 @@ public class MyAccountActivity extends CommonActivity implements SeekBar.OnSeekB
 		// This activity only makes sense when you're logged in
 		if( gs.getApiController().getCurrentUser() == null ){
 			AlertDialog.Builder builder = new AlertDialog.Builder(this);
-			builder.setTitle("Pas de Compte");
-			builder.setMessage("Veuillez vous connecter pour modifier votre compte");
+			builder.setTitle(getResources().getString(R.string.actAccount_noAccount_title));
+			builder.setMessage(getResources().getString(R.string.actAccount_noAccount_message));
 			builder.setCancelable(true);
 			builder.setOnCancelListener(new DialogInterface.OnCancelListener() {
 				@Override
@@ -106,14 +106,14 @@ public class MyAccountActivity extends CommonActivity implements SeekBar.OnSeekB
 				gs.getApiController().updateAccountInfo(loginEdit.getText().toString(), getColor(), new ApiController.Callback<Void>() {
 					@Override
 					public void onResponse(Void obj){
-						gs.alerter("Réglages enregistrés");
+						gs.alerter(getResources().getString(R.string.actAccount_noAccount_saved));
 						saveButton.setEnabled(true);
 						finish();
 					}
 					
 					@Override
 					public void onError(Error err){
-						gs.alerter("Erreur: " + err.getMessage());
+						gs.presentError(err);
 					}
 				});
 				
@@ -121,10 +121,10 @@ public class MyAccountActivity extends CommonActivity implements SeekBar.OnSeekB
 				
 			case R.id.account_btnDelete:
 				android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(this);
-				builder.setTitle("Suppression");
-				builder.setMessage("Voulez-vous vraiment supprimer votre compte?\nCette opération est irréversible!");
+				builder.setTitle(getResources().getString(R.string.actAccount_delete_title));
+				builder.setMessage(getResources().getString(R.string.actAccount_delete_message));
 				builder.setCancelable(true);
-				builder.setPositiveButton("Supprimer", new DialogInterface.OnClickListener() {
+				builder.setPositiveButton(getResources().getString(R.string.actAccount_delete_action), new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int which){
 						deleteAccount();
@@ -160,7 +160,7 @@ public class MyAccountActivity extends CommonActivity implements SeekBar.OnSeekB
 			
 			@Override
 			public void onError(Error err){
-				gs.alerter("Erreur: " + err.getMessage());
+				gs.presentError(err);
 			}
 		});
 	}

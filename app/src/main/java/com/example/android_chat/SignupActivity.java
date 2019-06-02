@@ -1,14 +1,11 @@
 package com.example.android_chat;
 
-import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
 import com.example.android_chat.api.ApiController;
-import com.example.android_chat.model.User;
 
 public class SignupActivity extends CommonActivity implements View.OnClickListener {
 	private EditText loginField;
@@ -19,7 +16,7 @@ public class SignupActivity extends CommonActivity implements View.OnClickListen
 	protected void onCreate(Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_signup);
-		getSupportActionBar().setTitle("Inscription");
+		getSupportActionBar().setTitle(getResources().getString(R.string.actSignup_title));
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		
 		loginField = findViewById(R.id.signup_edtLogin);
@@ -37,20 +34,20 @@ public class SignupActivity extends CommonActivity implements View.OnClickListen
 				final String pass = passField.getText().toString();
 				
 				if( login.isEmpty() || pass.isEmpty() ){
-					gs.alerter("Remplissez tous les champs");
+					gs.alerter(getResources().getString(R.string.missing_fields));
 					return;
 				}
 				
 				gs.getApiController().signup(login, pass, new ApiController.Callback<Void>() {
 					@Override
 					public void onResponse(Void obj){
-						gs.alerter("Vous êtes inscrit!");
+						gs.alerter(getResources().getString(R.string.actSignup_success));
 						finish();
 					}
 					
 					@Override
 					public void onError(Error err){
-						gs.alerter("Erreur: " + err.toString());
+						gs.presentError(err);
 					}
 				});
 				

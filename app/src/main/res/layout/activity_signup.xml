@@ -7,20 +7,20 @@
     android:layout_marginTop="8sp"
     android:layout_marginRight="8sp"
     android:layout_marginBottom="8sp"
-    android:gravity="right|center_horizontal"
+    android:gravity="center_horizontal|end"
     android:orientation="vertical">
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
-        android:text="Inscription"
+        android:text="@string/actSignup_title"
         android:textSize="48sp" />
 
     <android.support.design.widget.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Identifiant">
+        android:hint="@string/actSignup_login_label">
 
         <android.support.design.widget.TextInputEditText
             android:id="@+id/signup_edtLogin"
@@ -37,7 +37,7 @@
     <android.support.design.widget.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Mot de Passe">
+        android:hint="@string/actSignup_password_label">
 
         <android.support.design.widget.TextInputEditText
             android:id="@+id/signup_edtPass"
@@ -46,12 +46,12 @@
             android:layout_marginBottom="8sp"
             android:layout_weight="1"
             android:ems="10"
-            android:inputType="textPassword"/>
+            android:inputType="textPassword" />
     </android.support.design.widget.TextInputLayout>
 
     <Button
         android:id="@+id/signup_btnSubmit"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="S'Inscrire" />
+        android:text="@string/actSignup_submit" />
 </LinearLayout>

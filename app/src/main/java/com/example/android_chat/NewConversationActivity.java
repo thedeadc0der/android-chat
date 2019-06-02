@@ -31,7 +31,7 @@ public class NewConversationActivity extends CommonActivity implements View.OnCl
 				final String theme = themeEdit.getText().toString();
 				
 				if( theme.isEmpty() ){
-					gs.alerter("Remplissez tous les champs");
+					gs.alerter(getResources().getString(R.string.missing_fields));
 					return;
 				}
 				
@@ -39,18 +39,11 @@ public class NewConversationActivity extends CommonActivity implements View.OnCl
 					@Override
 					public void onResponse(Conversation conversation){
 						NewConversationActivity.this.finish();
-						/*
-						final Intent intent = new Intent(NewConversationActivity.this, ShowConvActivity.class);
-						intent.putExtra("conversation.id", conversation.getId());
-						intent.putExtra("conversation.theme", conversation.getTheme());
-						intent.putExtra("conversation.active", conversation.isActive());
-						startActivity(intent);
-						*/
 					}
 					
 					@Override
 					public void onError(Error err){
-						gs.alerter("Erreur: " + err.getMessage());
+						gs.presentError(err);
 					}
 				});
 				

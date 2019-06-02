@@ -12,7 +12,7 @@
     <android.support.design.widget.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Pseudo">
+        android:hint="@string/actAccount_login_label">
 
         <android.support.design.widget.TextInputEditText
             android:id="@+id/account_edtPseudo"
@@ -29,7 +29,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/couleur" />
+        android:text="@string/actAccount_color_label" />
 
     <View
         android:id="@+id/account_color"
@@ -39,7 +39,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Rouge" />
+        android:text="@string/actAccount_red" />
 
     <SeekBar
         android:id="@+id/account_colorRed"
@@ -52,7 +52,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Vert" />
+        android:text="@string/actAccount_green" />
 
     <SeekBar
         android:id="@+id/account_colorGreen"
@@ -63,7 +63,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Bleu" />
+        android:text="@string/actAccount_blue" />
 
     <SeekBar
         android:id="@+id/account_colorBlue"
@@ -76,13 +76,13 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:text="Enregistrer" />
+        android:text="@string/actAccount_save" />
 
     <Button
         android:id="@+id/account_btnDelete"
+        style="@style/Widget.MaterialComponents.Button.TextButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Supprimer mon Compte"
-        style="@style/Widget.MaterialComponents.Button.TextButton" />
+        android:text="@string/actAccount_delete" />
 
 </LinearLayout>

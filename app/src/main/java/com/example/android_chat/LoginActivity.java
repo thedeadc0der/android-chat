@@ -22,7 +22,7 @@ public class LoginActivity extends CommonActivity implements View.OnClickListene
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        getSupportActionBar().setTitle("Connection");
+        getSupportActionBar().setTitle(getResources().getString(R.string.actLogin_title));
         
         champLogin = findViewById(R.id.login_edtLogin);
         champPass = findViewById(R.id.login_edtPasse);
@@ -103,7 +103,7 @@ public class LoginActivity extends CommonActivity implements View.OnClickListene
 
                 // On vérifie que les champs sont remplis
                 if( login.isEmpty() || passe.isEmpty() ){
-                    gs.alerter("Remplissez tous les champs!");
+                    gs.alerter(getResources().getString(R.string.missing_fields));
                     return;
                 }
                 
@@ -115,7 +115,7 @@ public class LoginActivity extends CommonActivity implements View.OnClickListene
     
                     @Override
                     public void onError(Error err){
-                        gs.alerter("Erreur: " + err.getMessage());
+                        gs.presentError(err);
                         err.printStackTrace();
                     }
                 });

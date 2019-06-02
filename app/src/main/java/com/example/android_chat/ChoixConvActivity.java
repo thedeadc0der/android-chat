@@ -57,7 +57,7 @@ public class ChoixConvActivity extends CommonActivity implements AdapterView.OnI
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_choix_conversation);
-        getSupportActionBar().setTitle("Conversations");
+        getSupportActionBar().setTitle(getResources().getString(R.string.actConvList_title));
         
         conversationList = findViewById(R.id.choixConversation_list);
         conversationList.setOnItemLongClickListener(this);
@@ -84,17 +84,17 @@ public class ChoixConvActivity extends CommonActivity implements AdapterView.OnI
 		
 		    @Override
 		    public void onError(Error err){
-			    gs.alerter("Erreur: " + err.getMessage());
+			    gs.presentError(err);
 		    }
 	    });
     }
     
     private void askToDeleteConversation(final Conversation conversation){
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Suppression");
-        builder.setMessage("Voulez-vous vraiment supprimer la conversation '" + conversation.getTheme() + "' ?\nCette opération est irréversible!");
+        builder.setTitle(getResources().getString(R.string.actConvList_delete_title));
+        builder.setMessage(String.format(getResources().getString(R.string.actConvList_delete_message), conversation.getTheme()));
 	    builder.setCancelable(true);
-        builder.setPositiveButton("Supprimer", new DialogInterface.OnClickListener() {
+        builder.setPositiveButton(getResources().getString(R.string.actConvList_delete_action), new DialogInterface.OnClickListener() {
 	        @Override
 	        public void onClick(DialogInterface dialog, int which){
 	        	deleteConversation(conversation);
@@ -112,7 +112,7 @@ public class ChoixConvActivity extends CommonActivity implements AdapterView.OnI
 	
 	        @Override
 	        public void onError(Error err){
-	        	gs.alerter("Erreur: " + err.getMessage());
+	        	gs.presentError(err);
 	        }
         });
     }
@@ -131,10 +131,10 @@ public class ChoixConvActivity extends CommonActivity implements AdapterView.OnI
 	@Override
 	public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id){
 		final Conversation conversation = conversations.get(position);
-		final String [] options = {"Supprimer"};
+		final String [] options = {getResources().getString(R.string.actConvList_action_delete)};
 		
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		builder.setTitle("Conversation " + conversation.getTheme());
+		builder.setTitle(String.format(getResources().getString(R.string.actConvList_action_title), conversation.getTheme()));
 		builder.setItems(options, new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int which){

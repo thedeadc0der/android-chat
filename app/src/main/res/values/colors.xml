@@ -10,5 +10,9 @@
 
     <color name="orange">#FF7F00</color>
     <color name="blanc">#FFFFFF</color>
+
+    <color name="active_conversation">#651fff</color>
+    <color name="inactive_conversation">#ffbdbdbd</color>
+
 </resources>
 

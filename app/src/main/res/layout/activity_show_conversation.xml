@@ -38,14 +38,14 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:ems="10"
-            android:inputType="textPersonName"
-            android:hint="Tapez un message…" />
+            android:hint="@string/actShowConv_message_hint"
+            android:inputType="textPersonName" />
 
         <Button
             android:id="@+id/showConv_btnSend"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Send" />
+            android:text="@string/actShowConv_send" />
     </LinearLayout>
 </android.support.constraint.ConstraintLayout>

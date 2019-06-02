@@ -69,6 +69,10 @@ public class GlobalState extends Application {
 		return bStatut;
 	}
 	
+	public void presentError(Throwable err){
+		alerter(getResources().getString(R.string.error) + err.getMessage());
+	}
+	
 	public ApiController getApiController(){
 		return apiController;
 	}
