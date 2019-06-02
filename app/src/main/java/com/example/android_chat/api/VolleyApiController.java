@@ -439,8 +439,24 @@ public class VolleyApiController implements ApiController {
     }
     
     @Override
-    public void updateAccountInfo(String login, Color color, Callback<Void> cb){
+    public void updateAccountInfo(final String login, final Color color, final Callback<Void> cb){
+        Map<String, String> params = new HashMap<>();
+        params.put("pseudo", login);
+        params.put("couleur", color.toColorString());
+        
+        makeJsonObjectRequest(Request.Method.PATCH, "user/" + currentUser.getId(), params, getStandardHeaders(), new RequestCallback<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject obj){
+                currentUser.setPseudo(login);
+                currentUser.setColor(color);
+                cb.onResponse(null);
+            }
     
+            @Override
+            public void onError(Throwable exc){
+                cb.onError(new Error("impossible d'enregistrer les changements"));
+            }
+        });
     }
     
     private interface RequestCallback<T> {
@@ -465,8 +481,6 @@ public class VolleyApiController implements ApiController {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error){
-                        System.err.print(error);
-                        System.err.println("data: " + new String(error.networkResponse.data));
                         cb.onError(new Error("erreur réseau"));
                     }
                 }){
@@ -493,8 +507,6 @@ public class VolleyApiController implements ApiController {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error){
-                        System.err.print(error);
-                        System.err.println("data: " + new String(error.networkResponse.data));
                         cb.onError(new Error("erreur réseau"));
                     }
                 }){
