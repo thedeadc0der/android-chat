@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Generic -->
+    <string name="error">Erreur: </string>
+    <string name="missing_fields">Remplissez tous les champs</string>
+
+    <!-- Options menu -->
+    <string name="action_settings">Préférences</string>
+    <string name="action_account">Mon Compte</string>
+
+    <!-- Preferences -->
+    <string name="pref_saveLogin">Enregistrer Identifiants</string>
+    <string name="prefsum_saveLogin">Indique si les identifiants sont enregistrés à la connexion</string>
+    <string name="pref_serverUrl">URL de l\'API</string>
+    <string name="prefsum_serverUrl">Adresse de base de l\'API fournissant le service. Utiliser 10.0.2.2 dans le simulateur.</string>
+    <string name="pref_credentials">Identifiants</string>
+    <string name="prefsum_credentials">Identifiants pré-remplis dans l\'écran de connexion</string>
+    <string name="pref_login">Login</string>
+    <string name="pref_password">Mot de Passe</string>
+    <string name="pref_api">API</string>
+    <string name="prefsum_api">Réglages de l\'API</string>
+    <string name="pref_apiMock">Utiliser l\'API Mock</string>
+    <string name="prefsum_apiMock">Utiliser MockApiController au lieu de Volley. Relancez l\'application après changement.</string>
+
+    <!-- Login Activity -->
+    <string name="actLogin_title">Connexion</string>
+    <string name="actLogin_login_label">Identifiant</string>
+    <string name="actLogin_password_label">Mot de Passe</string>
+    <string name="actLogin_remember_label">Se Souvenir de Moi</string>
+    <string name="actLogin_log_in">Connexion</string>
+    <string name="actLogin_sign_up">Créer un Compte</string>
+    <string name="actLogin_network_none">Déconnecté</string>
+    <string name="actLogin_network_mobile">Données Mobiles</string>
+    <string name="actLogin_network_wifi">Wifi</string>
+    <string name="actLogin_network_other">Autre Réseau</string>
+    <string name="actLogin_uses_mock_api_ctrl">Utilise MockApiController</string>
+
+    <!-- Signup Activity -->
+    <string name="actSignup_title">Inscription</string>
+    <string name="actSignup_login_label">Identifiant</string>
+    <string name="actSignup_password_label">Mot de Passe</string>
+    <string name="actSignup_submit">S\'Inscrire</string>
+    <string name="actSignup_success">Vous êtes inscrit!</string>
+
+    <!-- Account Activity -->
+    <string name="actAccount_title">Mon Compte</string>
+    <string name="actAccount_login_label">Pseudo</string>
+    <string name="actAccount_color_label">Couleur Préférée</string>
+    <string name="actAccount_red">Rouge</string>
+    <string name="actAccount_green">Vert</string>
+    <string name="actAccount_blue">Bleu</string>
+    <string name="actAccount_save">Enregistrer</string>
+    <string name="actAccount_delete">Supprimer mon Compte</string>
+    <string name="actAccount_noAccount_title">Pas de Compte</string>
+    <string name="actAccount_noAccount_message">Veuillez vous connecter pour modifier votre compte</string>
+    <string name="actAccount_noAccount_saved">Réglages enregistrés</string>
+    <string name="actAccount_delete_title">Suppression de Compte</string>
+    <string name="actAccount_delete_message">Voulez-vous vraiment supprimer votre compte?\nCette opération est irréversible!</string>
+    <string name="actAccount_delete_action">Supprimer</string>
+
+    <!-- New Conversation Activity -->
+    <string name="actNewConv_title">Créer Conversation</string>
+    <string name="actNewConv_theme_label">Thème</string>
+    <string name="actNewConv_create">Créer</string>
+
+    <!-- Show Conversation Activity -->
+    <string name="actShowConv_message_hint">Tapez un message…</string>
+    <string name="actShowConv_send">Envoyer</string>
+    <string name="actShowConv_deleted_user">(compte supprimé)</string>
+    <string name="actShowConv_delete_title">Suppression</string>
+    <string name="actShowConv_delete_message">Voulez-vous vraiment supprimer ce message?</string>
+    <string name="actShowConv_delete_action">Supprimer</string>
+    <string name="actShowConv_no_message">Tapez un message!</string>
+    <string name="actShowConv_action_title">Message</string>
+    <string name="actShowConv_action_delete">Supprimer</string>
+
+    <!-- Conversation List Activity -->
+    <string name="actConvList_title">Conversations</string>
+    <string name="actConvList_delete_title">Conversations</string>
+    <string name="actConvList_delete_message">Voulez-vous vraiment supprimer la conversation "%s" ?\nCette opération est irréversible!</string>
+    <string name="actConvList_delete_action">Supprimer</string>
+    <string name="actConvList_action_title">Conversation "%s"</string>
+    <string name="actConvList_action_delete">Supprimer</string>
+
+    <!-- ApiController errors -->
+    <string name="err_network">erreur réseau</string>
+    <string name="err_bad_json">JSON invalide reçu</string>
+    <string name="err_bad_credentials">mauvais identifiants</string>
+    <string name="err_signup">inscription impossible</string>
+    <string name="err_logout">erreur de déconnexion</string>
+    <string name="err_delete_account">suppression impossible</string>
+    <string name="err_list_conv">impossible de lister les conversations</string>
+    <string name="err_create_conv">impossible de créer la conversation</string>
+    <string name="err_list_msg">impossible de récupérer les messages</string>
+    <string name="err_send_msg">impossible d\'envoyer le message</string>
+    <string name="err_delete_msg">impossible de supprimer le message</string>
+    <string name="err_delete_conv">impossible de supprimer la conversation</string>
+    <string name="err_update_account">impossible d\'enregistrer les changements</string>
+    <string name="err_no_response">aucune réponse reçue</string>
+    <string name="err_name_taken">pseudo déjà utilisé</string>
+    <string name="err_conv_exists">une conversation avec ce thème existe déjà</string>
+</resources>

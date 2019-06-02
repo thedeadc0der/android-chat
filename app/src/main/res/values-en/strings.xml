@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="error">Error: </string>
+    <string name="missing_fields">Please fill in all fields</string>
+
+    <!-- Options menu -->
+    <string name="action_settings">Preferences</string>
+    <string name="action_account">My Account</string>
+
+    <!-- Preferences -->
+    <string name="pref_saveLogin">Save Credentials</string>
+    <string name="prefsum_saveLogin">Indicates whether or not your credentials are saved when logging in</string>
+    <string name="pref_serverUrl">URL of the API</string>
+    <string name="prefsum_serverUrl">Base address of the API providing the service. Use 10.0.2.2 in the simulator.</string>
+    <string name="pref_credentials">Credentials</string>
+    <string name="prefsum_credentials">The credentials that are pre-filled into the login screen</string>
+    <string name="pref_login">Nickname</string>
+    <string name="pref_password">Password</string>
+    <string name="pref_api">API</string>
+    <string name="prefsum_api">API Settings</string>
+    <string name="pref_apiMock">Use the Mock API</string>
+    <string name="prefsum_apiMock">Use MockApiController instead of Volley. Relaunch the app after changing this.</string>
+
+    <!-- Login Activity -->
+    <string name="actLogin_title">Log In</string>
+    <string name="actLogin_login_label">Nickname</string>
+    <string name="actLogin_password_label">Password</string>
+    <string name="actLogin_remember_label">Remember Me</string>
+    <string name="actLogin_log_in">Log In</string>
+    <string name="actLogin_sign_up">Create An Account</string>
+    <string name="actLogin_network_none">Disconnected</string>
+    <string name="actLogin_network_mobile">Mobile Data</string>
+    <string name="actLogin_network_wifi">Wifi</string>
+    <string name="actLogin_network_other">Other Network</string>
+    <string name="actLogin_uses_mock_api_ctrl">Using MockApiController</string>
+
+    <!-- Signup Activity -->
+    <string name="actSignup_title">Sign Up</string>
+    <string name="actSignup_login_label">Nickname</string>
+    <string name="actSignup_password_label">Password</string>
+    <string name="actSignup_submit">Sign Up</string>
+    <string name="actSignup_success">Your account has been created!</string>
+
+    <!-- Account Activity -->
+    <string name="actAccount_title">My Account</string>
+    <string name="actAccount_login_label">Nickname</string>
+    <string name="actAccount_color_label">Favorite Color</string>
+    <string name="actAccount_red">Red</string>
+    <string name="actAccount_green">Green</string>
+    <string name="actAccount_blue">Blue</string>
+    <string name="actAccount_save">Save</string>
+    <string name="actAccount_delete">Delete my Account</string>
+    <string name="actAccount_noAccount_title">No Account</string>
+    <string name="actAccount_noAccount_message">Please log in so you can modify you account</string>
+    <string name="actAccount_noAccount_saved">Your settings have been saved</string>
+    <string name="actAccount_delete_title">Account Removal</string>
+    <string name="actAccount_delete_message">Do you really want to delete your account?\nThis operation cannot be undone!</string>
+    <string name="actAccount_delete_action">Remove</string>
+
+    <!-- New Conversation Activity -->
+    <string name="actNewConv_title">New Conversation</string>
+    <string name="actNewConv_theme_label">Theme</string>
+    <string name="actNewConv_create">Create</string>
+
+    <!-- Show Conversation Activity -->
+    <string name="actShowConv_message_hint">Type in a message…</string>
+    <string name="actShowConv_send">Send</string>
+    <string name="actShowConv_deleted_user">(removed account)</string>
+    <string name="actShowConv_delete_title">Remove</string>
+    <string name="actShowConv_delete_message">Do you really want to remove this message?</string>
+    <string name="actShowConv_delete_action">Remove</string>
+    <string name="actShowConv_no_message">Type in a message!</string>
+    <string name="actShowConv_action_title">Message</string>
+    <string name="actShowConv_action_delete">Remove</string>
+
+    <!-- Conversation List Activity -->
+    <string name="actConvList_title">Conversations</string>
+    <string name="actConvList_delete_title">Conversations</string>
+    <string name="actConvList_delete_message">Do you really want to remove the "%s" conversation?\nThis operation cannot be undone!</string>
+    <string name="actConvList_delete_action">Remove</string>
+    <string name="actConvList_action_title">Conversation "%s"</string>
+    <string name="actConvList_action_delete">Remove</string>
+
+    <!-- ApiController errors -->
+    <string name="err_network">network problem</string>
+    <string name="err_bad_json">received invalid JSON</string>
+    <string name="err_bad_credentials">incorrect credentials</string>
+    <string name="err_signup">unable to sign you up</string>
+    <string name="err_logout">unable to log you out</string>
+    <string name="err_delete_account">unable to delete your account</string>
+    <string name="err_list_conv">unable to retrieve conversations</string>
+    <string name="err_create_conv">unable to create conversation</string>
+    <string name="err_list_msg">unable to retrieve messages</string>
+    <string name="err_send_msg">unable to send message</string>
+    <string name="err_delete_msg">unable to remove the message</string>
+    <string name="err_delete_conv">unable to remove the conversation</string>
+    <string name="err_update_account">unable to save your settings</string>
+    <string name="err_no_response">no response was received</string>
+    <string name="err_name_taken">nickname already in use</string>
+    <string name="err_conv_exists">a conversation with this theme already exists</string>
+</resources>
