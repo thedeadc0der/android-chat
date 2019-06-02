@@ -43,7 +43,7 @@ class ConversationMessageAdapter extends RecyclerView.Adapter<ConversationMessag
         public void setMessage(Message msg, boolean isFromUser){
             final Resources r = itemView.getContext().getResources();
             
-            authorText.setText(msg.getAuthor().getPseudo());
+            authorText.setText(msg.getAuthor() != null ? msg.getAuthor().getPseudo() : "(compte supprimé)");
             contentText.setText(msg.getContent());
             cardView.setCardBackgroundColor(r.getColor(isFromUser ? R.color.colorPrimaryDark : R.color.blanc));
             authorText.setTextColor(r.getColor(isFromUser ? R.color.blanc : R.color.title));
@@ -70,8 +70,8 @@ class ConversationMessageAdapter extends RecyclerView.Adapter<ConversationMessag
     @Override
     public void onBindViewHolder(CMViewHolder holder, int position){
         final Message message = messages.get(position);
-        
-        holder.setMessage(message, message.getAuthor().equals(user));
+        final boolean isFromUser = message.getAuthor() != null ? message.getAuthor().equals(user) : false;
+        holder.setMessage(message, isFromUser);
         holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v){

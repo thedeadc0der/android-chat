@@ -265,19 +265,28 @@ public class VolleyApiController implements ApiController {
                     
                     for(int i=0; i < obj.length(); ++i){
                         JSONObject jsonMessage = obj.getJSONObject(i);
-                        JSONObject jsonAuthor = jsonMessage.getJSONObject("auteur");
                         
-                        final User author = new User(
-                                jsonAuthor.getInt("id"),
-                                jsonAuthor.getString("pseudo"),
-                                jsonAuthor.getString("couleur"),
-                                jsonAuthor.getInt("admin") == 1);
-                        
-                        messages.add(new Message(
-                                jsonMessage.getInt("id"),
-                                author,
-                                jsonMessage.getString("contenu")
-                        ));
+                        if( !jsonMessage.isNull("auteur") ){
+                            JSONObject jsonAuthor = jsonMessage.getJSONObject("auteur");
+    
+                            final User author = new User(
+                                    jsonAuthor.getInt("id"),
+                                    jsonAuthor.getString("pseudo"),
+                                    jsonAuthor.getString("couleur"),
+                                    jsonAuthor.getInt("admin") == 1);
+    
+                            messages.add(new Message(
+                                    jsonMessage.getInt("id"),
+                                    author,
+                                    jsonMessage.getString("contenu")
+                            ));
+                        } else {
+                            messages.add(new Message(
+                                    jsonMessage.getInt("id"),
+                                    null,
+                                    jsonMessage.getString("contenu")
+                            ));
+                        }
                     }
                     cb.onResponse(messages);
                 } catch(JSONException ex){
@@ -312,19 +321,27 @@ public class VolleyApiController implements ApiController {
                     
                     for(int i=0; i < messages.length(); ++i){
                         JSONObject jsonMessage = messages.getJSONObject(i);
-                        JSONObject jsonAuthor = jsonMessage.getJSONObject("auteur");
+                        if( !jsonMessage.isNull("auteur") ){
+                            JSONObject jsonAuthor = jsonMessage.getJSONObject("auteur");
+        
+                            final User author = new User(
+                                    jsonAuthor.getInt("id"),
+                                    jsonAuthor.getString("pseudo"),
+                                    jsonAuthor.getString("couleur"),
+                                    jsonAuthor.getInt("admin") == 1);
     
-                        final User author = new User(
-                                jsonAuthor.getInt("id"),
-                                jsonAuthor.getString("pseudo"),
-                                jsonAuthor.getString("couleur"),
-                                jsonAuthor.getInt("admin") == 1);
-    
-                        result.add(new Message(
-                                jsonMessage.getInt("id"),
-                                author,
-                                jsonMessage.getString("contenu")
-                        ));
+                            result.add(new Message(
+                                    jsonMessage.getInt("id"),
+                                    author,
+                                    jsonMessage.getString("contenu")
+                            ));
+                        } else {
+                            result.add(new Message(
+                                    jsonMessage.getInt("id"),
+                                    null,
+                                    jsonMessage.getString("contenu")
+                            ));
+                        }
                     }
                     
                     cb.onResponse(result);
