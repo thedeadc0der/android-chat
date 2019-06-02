@@ -29,7 +29,7 @@ public class VolleyApiController implements ApiController {
     /**
      * Attributs
      */
-    private static final String prefixURL = "http://10.0.2.2:5000/";
+    private static final String prefixURL = "http://192.168.1.20:5000/";
     private String accessToken;
     public RequestQueue volleyRequestQueue;
     private User currentUser = null;
@@ -57,57 +57,46 @@ public class VolleyApiController implements ApiController {
      * @param cb
      */
     @Override
-    public void login(String login, String pass, final Callback<Void> cb) {
-        String url = prefixURL + "login";
-
-        //Définition des paramètres
-        Map<String, String> jsonParams = new HashMap<>();
-        jsonParams.put("login", login);
-        jsonParams.put("password", pass);
-
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, url, new JSONObject(jsonParams),
-                new Response.Listener<JSONObject>()
-                {
-                    @Override
-                    public void onResponse(JSONObject response)
-                    {
-                        if(response != null){
-                            try {
-                                if(response.getString("status").equals("success")){
-                                    accessToken = response.getString("token");
-                                    //Save the current user
-                                    JSONObject userInfos = response.getJSONObject("userInfo");
-                                    int id = userInfos.getInt("id");
-                                    String pseudo = userInfos.getString("pseudo");
-                                    String color = userInfos.getString("couleur");
-                                    boolean admin = ((String) userInfos.getString("admin")).contentEquals("1");
-                                    currentUser = new User(id, pseudo, color, admin);
-
-                                    cb.onResponse(null);
-                                }
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    }
-                },
-                new Response.ErrorListener(){
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        // If they don't, give out an error
-                        cb.onError(new Error("bad credentials"));
-                    }
-                })
-        {
+    public void login(String login, String pass, final Callback<Void> cb){
+        final Map<String, String> params = new HashMap<>();
+        params.put("login", login);
+        params.put("password", pass);
+        
+        final Map<String, String> headers = new HashMap<>();
+        headers.put("Content-Type", "application/json; charset=UTF-8");
+        
+        makeJsonObjectRequest(Request.Method.POST, "login", params, headers, new RequestCallback<JSONObject>() {
             @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String, String> headers = new HashMap<String, String>();
-                headers.put("Content-Type", "application/json; charset=UTF-8");
-                return headers;
+            public void onResponse(JSONObject response){
+                try {
+                    if( !response.getString("status").equals("success") ){
+                        cb.onError(new Error("erreur serveur"));
+                        return;
+                    }
+        
+                    // Store the access token
+                    accessToken = response.getString("token");
+        
+                    // Then reconstitute the user
+                    JSONObject jsonUser = response.getJSONObject("userInfo");
+                    currentUser = new User(
+                            jsonUser.getInt("id"),
+                            jsonUser.getString("pseudo"),
+                            jsonUser.getString("couleur"),
+                            jsonUser.getInt("admin") == 1
+                    );
+        
+                    cb.onResponse(null);
+                } catch (JSONException e) {
+                    cb.onError(new Error("json invalide"));
+                }
             }
-        };
-
-        volleyRequestQueue.add(request);
+    
+            @Override
+            public void onError(Throwable exc){
+                cb.onError(new Error("mauvais identifiants"));
+            }
+        });
     }
 
     /**
@@ -117,50 +106,35 @@ public class VolleyApiController implements ApiController {
      * @param cb
      */
     @Override
-    public void signup(String pseudo, String pass, final Callback<Void> cb) {
-        String url = prefixURL + "signup";
-
-        //Définition des paramètres
-        Map<String, String> jsonParams = new HashMap<>();
-        jsonParams.put("login", pseudo);
-        jsonParams.put("password", pass);
-
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, url, new JSONObject(jsonParams),
-                new Response.Listener<JSONObject>()
-                {
-                    @Override
-                    public void onResponse(JSONObject response)
-                    {
-                        if(response != null){
-                            try {
-                                if(response.getString("status").equals("success")){
-                                    accessToken = response.getString("token");
-
-                                    cb.onResponse(null);
-                                }
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    }
-                },
-                new Response.ErrorListener(){
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        // If they don't, give out an error
-                        cb.onError(new Error("pseudo already used"));
-                    }
-                })
-        {
+    public void signup(String pseudo, String pass, final Callback<Void> cb){
+        Map<String, String> params = new HashMap<>();
+        params.put("login", pseudo);
+        params.put("password", pass);
+    
+        final Map<String, String> headers = new HashMap<>();
+        headers.put("Content-Type", "application/json; charset=UTF-8");
+        
+        makeJsonObjectRequest(Request.Method.POST, "signup", params, headers, new RequestCallback<JSONObject>() {
             @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String, String> headers = new HashMap<String, String>();
-                headers.put("Content-Type", "application/json; charset=UTF-8");
-                return headers;
+            public void onResponse(JSONObject response){
+                try {
+                    if( !response.getString("status").equals("success") ){
+                        cb.onError(new Error("erreur serveur"));
+                        return;
+                    }
+    
+                    // XXX: This method used to store the access token, but it shouldn't have?
+                    cb.onResponse(null);
+                } catch (JSONException e) {
+                    cb.onError(new Error("json invalide"));
+                }
             }
-        };
-
-        volleyRequestQueue.add(request);
+    
+            @Override
+            public void onError(Throwable exc){
+                cb.onError(new Error("inscription impossible"));
+            }
+        });
     }
 
     /**
@@ -168,38 +142,20 @@ public class VolleyApiController implements ApiController {
      * @param cb
      */
     @Override
-    public void logout(final Callback<Void> cb) {
-        String url = prefixURL + "logout";
-
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.DELETE, url, null,
-                new Response.Listener<JSONObject>()
-                {
-                    @Override
-                    public void onResponse(JSONObject response)
-                    {
-                        if(response != null){
-                            cb.onResponse(null);
-                        }
-                    }
-                },
-                new Response.ErrorListener(){
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        // If they don't, give out an error
-                        cb.onError(new Error("error while logout"));
-                    }
-                })
-        {
+    public void logout(final Callback<Void> cb){
+        Map<String, String> headers = getStandardHeaders();
+        
+        makeJsonObjectRequest(Request.Method.DELETE, "logout", null, headers, new RequestCallback<JSONObject>() {
             @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String, String> headers = new HashMap<String, String>();
-                headers.put("Content-Type", "application/json; charset=UTF-8");
-                headers.put("Authorization", "Bearer " + accessToken);
-                return headers;
+            public void onResponse(JSONObject obj){
+                cb.onResponse(null);
             }
-        };
-
-        volleyRequestQueue.add(request);
+    
+            @Override
+            public void onError(Throwable exc){
+                cb.onError(new Error("erreur de déconnexion"));
+            }
+        });
     }
 
     /**
@@ -208,212 +164,132 @@ public class VolleyApiController implements ApiController {
      * @param cb
      */
     @Override
-    public void deleteUser(User user, final Callback<Void> cb) {
-        String url = prefixURL + "user/delete";
-
-        //Définition des paramètres
-        Map<String, String> jsonParams = new HashMap<>();
-        jsonParams.put("userId", String.valueOf(user.getId()));
-
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.DELETE, url, new JSONObject(jsonParams),
-                new Response.Listener<JSONObject>()
-                {
-                    @Override
-                    public void onResponse(JSONObject response)
-                    {
-                        if(response != null){
-                            cb.onResponse(null);
-                        }
-                    }
-                },
-                new Response.ErrorListener(){
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        // If they don't, give out an error
-                        cb.onError(new Error("error while deleting the user"));
-                    }
-                })
-        {
+    public void deleteUser(User user, final Callback<Void> cb){
+        makeJsonObjectRequest(Request.Method.DELETE, "user/" + user.getId(), null, getStandardHeaders(), new RequestCallback<JSONObject>() {
             @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String, String> headers = new HashMap<String, String>();
-                headers.put("Content-Type", "application/json; charset=UTF-8");
-                headers.put("Authorization", "Bearer " + accessToken);
-                return headers;
+            public void onResponse(JSONObject obj){
+                cb.onResponse(null);
             }
-        };
-
-        volleyRequestQueue.add(request);
+    
+            @Override
+            public void onError(Throwable exc){
+                cb.onError(new Error("suppression impossible"));
+            }
+        });
     }
-
+    
     /**
      * Renvoyer la liste de toutes les conversations
      * @param cb
      */
     @Override
-    public void listConversations(final Callback<List<Conversation>> cb) {
-        String url = prefixURL + "conversations";
-
-        JsonArrayRequest request = new JsonArrayRequest(Request.Method.GET, url, null,
-                new Response.Listener<JSONArray>()
-                {
-                    @Override
-                    public void onResponse(JSONArray response)
-                    {
-                        if(response != null){
-                            List<Conversation> conversations = new ArrayList<Conversation>();
-                            for (int i = 0; i < response.length(); i++) {
-                                JSONObject obj = null;
-                                try {
-                                    obj = new JSONObject(response.getString(i));
-                                    //Create a conversation
-                                    int id =Integer.parseInt(obj.getString("id"));
-                                    String theme = obj.getString("theme");
-                                    boolean active = ((String) obj.getString("active")).contentEquals("1");
-                                    Conversation c = new Conversation(id,theme,active,"");
-                                    conversations.add(c);
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                            cb.onResponse(conversations);
-                        }
-                    }
-                },
-                new Response.ErrorListener(){
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        // If they don't, give out an error
-                        cb.onError(new Error("error while retrieving conversations"));
-                    }
-                })
-        {
+    public void listConversations(final Callback<List<Conversation>> cb){
+        Map<String, String> headers = getStandardHeaders();
+        
+        makeJsonArrayRequest(Request.Method.GET, "conversations", headers, new RequestCallback<JSONArray>() {
             @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String, String> headers = new HashMap<String, String>();
-                headers.put("Content-Type", "application/json; charset=UTF-8");
-                headers.put("Authorization", "Bearer " + accessToken);
-                return headers;
+            public void onResponse(JSONArray response){
+                try {
+                    List<Conversation> conversations = new ArrayList<Conversation>();
+    
+                    for (int i = 0; i < response.length(); i++) {
+                        JSONObject curr = response.getJSONObject(i);
+        
+                        conversations.add(new Conversation(
+                                curr.getInt("id"),
+                                curr.getString("theme"),
+                                curr.getInt("active") == 1,
+                                "" // TODO
+                        ));
+                    }
+    
+                    cb.onResponse(conversations);
+                } catch(JSONException ex){
+                    cb.onError(new Error("json invalide"));
+                }
             }
-        };
-
-        volleyRequestQueue.add(request);
+            
+            @Override
+            public void onError(Throwable exc){
+                cb.onError(new Error("Impossible de lister les conversations"));
+            }
+        });
     }
-
+    
     /**
      * Créer une conversation dont le theme est passer en paramètre
      * @param theme
      * @param cb
      */
     @Override
-    public void createConversation(final String theme, final Callback<Conversation> cb) {
-        String url = prefixURL + "conversation/new";
-
-        //Définition des paramètres
+    public void createConversation(final String theme, final Callback<Conversation> cb){
         Map<String, String> jsonParams = new HashMap<>();
         jsonParams.put("theme", theme);
-
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, url, new JSONObject(jsonParams),
-                new Response.Listener<JSONObject>()
-                {
-                    @Override
-                    public void onResponse(JSONObject response)
-                    {
-                        if(response != null){
-                            try {
-                                int idConv = response.getInt("idConversation");
-
-                                Conversation c = new Conversation(idConv, theme, true, "");
-                                cb.onResponse(c);
-
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    }
-                },
-                new Response.ErrorListener(){
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        // If they don't, give out an error
-                        cb.onError(new Error("error while creating conversation"));
-                    }
-                })
-        {
+    
+        Map<String, String> headers = getStandardHeaders();
+        
+        makeJsonObjectRequest(Request.Method.POST, "conversation/new", jsonParams, headers, new RequestCallback<JSONObject>() {
             @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String, String> headers = new HashMap<String, String>();
-                headers.put("Content-Type", "application/json; charset=UTF-8");
-                headers.put("Authorization", "Bearer " + accessToken);
-                return headers;
+            public void onResponse(JSONObject obj){
+                try {
+                    cb.onResponse(new Conversation(
+                            obj.getInt("idConversation"),
+                            theme, true, "")
+                    );
+                } catch(JSONException ex){
+                    cb.onError(new Error("json invalide"));
+                }
             }
-        };
-
-        volleyRequestQueue.add(request);
+    
+            @Override
+            public void onError(Throwable exc){
+                cb.onError(new Error("Impossible de créer la conversation"));
+            }
+        });
     }
-
+    
     /**
      * Renvoie tous les messages d'une conversation
      * @param conversation
      * @param cb
      */
     @Override
-    public void listMessages(final Conversation conversation, final Callback<List<Message>> cb) {
-        String url = prefixURL + "conversations/"+conversation.getId();
+    public void listMessages(final Conversation conversation, final Callback<List<Message>> cb){
+        Map<String, String> headers = getStandardHeaders();
         
-        JsonArrayRequest request = new JsonArrayRequest(Request.Method.GET, url, null,
-                new Response.Listener<JSONArray>()
-                {
-                    @Override
-                    public void onResponse(JSONArray messages)
-                    {
-                        try {
-                            List<Message> listMessages = new ArrayList<Message>();
-                            for(int i=0;i<messages.length();i++) {
-                                
-                                //Find messages infos
-                                JSONObject msg = (JSONObject) messages.get(i);
-                                int id = msg.getInt("id");
-                                String contenu =  msg.getString("contenu");
-                                
-                                //Find auteur infos
-                                JSONObject auteurInfos = msg.getJSONObject("auteur");
-                                int idAuteur = auteurInfos.getInt("id");
-                                String pseudo = auteurInfos.getString("pseudo");
-                                String color = auteurInfos.getString("couleur");
-                                boolean admin = ((String) auteurInfos.getString("admin")).contentEquals("1");
-                                
-                                //Create user & message
-                                User user = new User(idAuteur, pseudo,color,admin);
-                                Message message = new Message(id,user,contenu);
-                                
-                                listMessages.add(message);
-                            }
-                            
-                            cb.onResponse(listMessages);
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                },
-                new Response.ErrorListener(){
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        // If they don't, give out an error
-                        cb.onError(new Error("error while retrieving messsages"));
-                    }
-                })
-        {
+        makeJsonArrayRequest(Request.Method.GET, "conversations/" + conversation.getId(), headers, new RequestCallback<JSONArray>() {
             @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String, String> headers = new HashMap<String, String>();
-                headers.put("Content-Type", "application/json; charset=UTF-8");
-                headers.put("Authorization", "Bearer " + accessToken);
-                return headers;
+            public void onResponse(JSONArray obj){
+                try {
+                    List<Message> messages = new ArrayList<>();
+                    
+                    for(int i=0; i < obj.length(); ++i){
+                        JSONObject jsonMessage = obj.getJSONObject(i);
+                        JSONObject jsonAuthor = jsonMessage.getJSONObject("auteur");
+                        
+                        final User author = new User(
+                                jsonAuthor.getInt("id"),
+                                jsonAuthor.getString("pseudo"),
+                                jsonAuthor.getString("couleur"),
+                                jsonAuthor.getInt("admin") == 1);
+                        
+                        messages.add(new Message(
+                                jsonMessage.getInt("id"),
+                                author,
+                                jsonMessage.getString("contenu")
+                        ));
+                    }
+                    cb.onResponse(messages);
+                } catch(JSONException ex){
+                    cb.onError(new Error("json invalide"));
+                }
             }
-        };
-
-        volleyRequestQueue.add(request);
+    
+            @Override
+            public void onError(Throwable exc){
+                cb.onError(new Error("Impossible de récupérer les messages"));
+            }
+        });
     }
 
     /**
@@ -423,69 +299,47 @@ public class VolleyApiController implements ApiController {
      * @param cb
      */
     @Override
-    public void listMessagesFrom(Conversation conversation, Message lastMessage, final Callback<List<Message>> cb) {
-        String url = prefixURL + "refresh/"+conversation.getId()+"/"+ lastMessage.getId();
-
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null,
-                new Response.Listener<JSONObject>()
-                {
-                    @Override
-                    public void onResponse(JSONObject response)
-                    {
-                        if(response != null){
-                            try {
-                                JSONArray messages = null;
-                                messages = response.getJSONArray("messages");
-                                List<Message> listMessages = new ArrayList<Message>();
-                                for(int i=0;i<messages.length();i++) {
-
-                                    //Find messages infos
-                                    JSONObject msg = (JSONObject) messages.get(i);
-                                    int id = msg.getInt("id");
-                                    String contenu =  msg.getString("contenu");
-
-                                    //Find auteur infos
-                                    JSONObject auteurInfos = msg.getJSONObject("auteur");
-                                    int idAuteur = auteurInfos.getInt("id");
-                                    String pseudo = auteurInfos.getString("pseudo");
-                                    String color = auteurInfos.getString("couleur");
-                                    boolean admin = ((String) auteurInfos.getString("admin")).contentEquals("1");
-
-                                    //Create user & message
-                                    User user = new User(idAuteur, pseudo,color,admin);
-                                    Message message = new Message(id,user,contenu);
-
-                                    listMessages.add(message);
-                                }
-
-                                cb.onResponse(listMessages);
-
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    }
-                },
-                new Response.ErrorListener(){
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        // If they don't, give out an error
-                        cb.onError(new Error("error while retrieving messsages"));
-                    }
-                })
-        {
+    public void listMessagesFrom(Conversation conversation, Message lastMessage, final Callback<List<Message>> cb){
+        final String url = "refresh/" + conversation.getId() + "/" + lastMessage.getId();
+        Map<String, String> headers = getStandardHeaders();
+        
+        makeJsonObjectRequest(Request.Method.GET, url, null, headers, new RequestCallback<JSONObject>() {
             @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String, String> headers = new HashMap<String, String>();
-                headers.put("Content-Type", "application/json; charset=UTF-8");
-                headers.put("Authorization", "Bearer " + accessToken);
-                return headers;
+            public void onResponse(JSONObject obj){
+                try {
+                    JSONArray messages = obj.getJSONArray("messages");
+                    List<Message> result = new ArrayList<>();
+                    
+                    for(int i=0; i < messages.length(); ++i){
+                        JSONObject jsonMessage = messages.getJSONObject(i);
+                        JSONObject jsonAuthor = jsonMessage.getJSONObject("auteur");
+    
+                        final User author = new User(
+                                jsonAuthor.getInt("id"),
+                                jsonAuthor.getString("pseudo"),
+                                jsonAuthor.getString("couleur"),
+                                jsonAuthor.getInt("admin") == 1);
+    
+                        result.add(new Message(
+                                jsonMessage.getInt("id"),
+                                author,
+                                jsonMessage.getString("contenu")
+                        ));
+                    }
+                    
+                    cb.onResponse(result);
+                } catch(JSONException ex){
+                    cb.onError(new Error("json invalide"));
+                }
             }
-        };
-
-        volleyRequestQueue.add(request);
+    
+            @Override
+            public void onError(Throwable exc){
+                cb.onError(new Error("impossible de récupérer les messages"));
+            }
+        });
     }
-
+    
     /**
      * Ajoute un nouveau message à la conversation
      * @param conversation
@@ -493,117 +347,151 @@ public class VolleyApiController implements ApiController {
      * @param cb
      */
     @Override
-    public void sendMessage(Conversation conversation, final String msg, final Callback<Message> cb) {
-        String url = prefixURL + "conversation/"+conversation.getId()+"/message";
-
-        //Définition des paramètres
+    public void sendMessage(Conversation conversation, String msg, final Callback<Message> cb){
+        final String url = "conversation/" + conversation.getId() + "/message";
+        
         Map<String, String> jsonParams = new HashMap<>();
         jsonParams.put("content", msg);
-
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, url, new JSONObject(jsonParams),
-                new Response.Listener<JSONObject>()
-                {
-                    @Override
-                    public void onResponse(JSONObject response)
-                    {
-                        if(response != null){
-                            try {
-                                JSONObject newMessage = response.getJSONObject("insertedMessage");
-                                JSONObject auteurInfos = newMessage.getJSONObject("auteur");
-
-                                //Auteur infos
-                                int idAuteur = auteurInfos.getInt("id");
-                                String pseudo = auteurInfos.getString("pseudo");
-                                String couleur = auteurInfos.getString("couleur");
-                                boolean admin = ((String) auteurInfos.getString("admin")).contentEquals("1");
-
-                                //Message infos
-                                int idMessage = newMessage.getInt("id");
-                                String contenu = newMessage.getString("contenu");
-
-                                //User & Message
-                                User user = new User(idAuteur,pseudo,couleur,admin);
-                                Message message = new Message(idMessage,user,contenu);
-
-                                cb.onResponse(message);
-
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    }
-                },
-                new Response.ErrorListener(){
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        // If they don't, give out an error
-                        cb.onError(new Error("error while posting the message"));
-                    }
-                })
-        {
+    
+        Map<String, String> headers = getStandardHeaders();
+        
+        makeJsonObjectRequest(Request.Method.POST, url, jsonParams, headers, new RequestCallback<JSONObject>() {
             @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String, String> headers = new HashMap<String, String>();
-                headers.put("Content-Type", "application/json; charset=UTF-8");
-                headers.put("Authorization", "Bearer " + accessToken);
-                return headers;
+            public void onResponse(JSONObject obj){
+                try {
+                    JSONObject jsonMessage = obj.getJSONObject("insertedMessage");
+                    JSONObject jsonAuthor = jsonMessage.getJSONObject("auteur");
+                    
+                    final User author = new User(
+                            jsonAuthor.getInt("id"),
+                            jsonAuthor.getString("pseudo"),
+                            jsonAuthor.getString("couleur"),
+                            jsonAuthor.getInt("admin") == 1
+                    );
+                    
+                    cb.onResponse(new Message(
+                            jsonMessage.getInt("id"),
+                            author,
+                            jsonMessage.getString("contenu")
+                    ));
+                } catch(JSONException ex){
+                    cb.onError(new Error("json invalide"));
+                }
             }
-        };
-
-        volleyRequestQueue.add(request);
+    
+            @Override
+            public void onError(Throwable exc){
+                cb.onError(new Error("impossible d'envoyer le message"));
+            }
+        });
     }
-
+    
     /**
      * Supprimer le message passé en paramètre
      * @param msg
      * @param cb
      */
     @Override
-    public void deleteMessage(final Message msg, final Callback<Void> cb) {
-        String url = prefixURL + "message/delete";
-
-        //Définition des paramètres
-        Map<String, String> jsonParams = new HashMap<>();
-        jsonParams.put("idMessage", String.valueOf(msg.getId()));
-
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.DELETE, url, new JSONObject(jsonParams),
-                new Response.Listener<JSONObject>()
-                {
-                    @Override
-                    public void onResponse(JSONObject response)
-                    {
-                        if(response != null){
-                            cb.onResponse(null);
-                        }
-                    }
-                },
-                new Response.ErrorListener(){
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        // If they don't, give out an error
-                        cb.onError(new Error("error while deleting the message"));
-                    }
-                })
-        {
+    public void deleteMessage(Message msg, final Callback<Void> cb){
+        makeJsonObjectRequest(Request.Method.DELETE, "message/" + msg.getId(), null, getStandardHeaders(), new RequestCallback<JSONObject>() {
             @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String, String> headers = new HashMap<String, String>();
-                headers.put("Content-Type", "application/json; charset=UTF-8");
-                headers.put("Authorization", "Bearer " + accessToken);
-                return headers;
+            public void onResponse(JSONObject obj){
+                cb.onResponse(null);
             }
-        };
-
-        volleyRequestQueue.add(request);
+    
+            @Override
+            public void onError(Throwable exc){
+                cb.onError(new Error("impossible de supprimer le message"));
+            }
+        });
     }
     
     @Override
-    public void deleteConversation(Conversation conversation, Callback<Void> cb){
-    
+    public void deleteConversation(Conversation conv, final Callback<Void> cb){
+        makeJsonObjectRequest(Request.Method.DELETE, "conversation/" + conv.getId(), null, getStandardHeaders(), new RequestCallback<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject obj){
+                cb.onResponse(null);
+            }
+        
+            @Override
+            public void onError(Throwable exc){
+                cb.onError(new Error("impossible de supprimer la conversation"));
+            }
+        });
     }
     
     @Override
     public void updateAccountInfo(String login, Color color, Callback<Void> cb){
     
+    }
+    
+    private interface RequestCallback<T> {
+        void onResponse(T obj);
+        void onError(Throwable exc);
+    }
+    
+    private void makeJsonObjectRequest(int method, String url, Map<String, String> params, final Map<String, String> headers, final RequestCallback<JSONObject> cb){
+        volleyRequestQueue.add(new JsonObjectRequest(method, prefixURL + url,
+                params == null ? new JSONObject() : new JSONObject(params),
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response){
+                        if (response == null){
+                            cb.onError(new Error("aucune réponse"));
+                            return;
+                        }
+            
+                        cb.onResponse(response);
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error){
+                        System.err.print(error);
+                        System.err.println("data: " + new String(error.networkResponse.data));
+                        cb.onError(new Error("erreur réseau"));
+                    }
+                }){
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError{
+                return headers == null ? super.getHeaders() : headers;
+            }
+        });
+    }
+    
+    private void makeJsonArrayRequest(int method, String url, final Map<String, String> headers, final RequestCallback<JSONArray> cb){
+        volleyRequestQueue.add(new JsonArrayRequest(method, prefixURL + url, null,
+                new Response.Listener<JSONArray>() {
+                    @Override
+                    public void onResponse(JSONArray response){
+                        if (response == null){
+                            cb.onError(new Error("aucune réponse"));
+                            return;
+                        }
+                        
+                        cb.onResponse(response);
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error){
+                        System.err.print(error);
+                        System.err.println("data: " + new String(error.networkResponse.data));
+                        cb.onError(new Error("erreur réseau"));
+                    }
+                }){
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError{
+                return headers == null ? super.getHeaders() : headers;
+            }
+        });
+    }
+    
+    private Map<String, String> getStandardHeaders(){
+        Map<String, String> headers = new HashMap<String, String>();
+        headers.put("Content-Type", "application/json; charset=UTF-8");
+        headers.put("Authorization", "Bearer " + accessToken);
+        return headers;
     }
 }
