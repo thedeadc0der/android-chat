@@ -98,4 +98,9 @@
     <string name="err_no_response">no response was received</string>
     <string name="err_name_taken">nickname already in use</string>
     <string name="err_conv_exists">a conversation with this theme already exists</string>
+    <string name="err_get_profile">unable to retrieve the profile</string>
+    <string name="actShowConv_action_show_profile">View Profile</string>
+    <string name="actShowConv_no_profile">This user has deleted their profile</string>
+    <string name="actProfile_active_in">Seen in these conversations</string>
+    <string name="actProfile_title">Profile</string>
 </resources>

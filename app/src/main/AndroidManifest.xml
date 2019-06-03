@@ -14,6 +14,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
+        <activity android:name=".ProfileActivity"></activity>
         <activity android:name=".MyAccountActivity" />
         <activity android:name=".NewConversationActivity" />
         <activity android:name=".SignupActivity" />

@@ -27,4 +27,5 @@ public interface ApiController {
 	void deleteMessage(Message message, Callback<Void> cb);
 	void updateAccountInfo(String login, Color color, Callback<Void> cb);
 	void deleteUser(User user, Callback<Void> cb);
+	void getUserConversations(User user, Callback<List<Conversation>> cb);
 }

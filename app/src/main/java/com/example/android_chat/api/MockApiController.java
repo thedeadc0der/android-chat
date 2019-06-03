@@ -189,4 +189,9 @@ public class MockApiController implements ApiController {
 	public void deleteUser(User user, Callback<Void> cb){
 		cb.onError(new Error(resources.getString(R.string.err_delete_account)));
 	}
+	
+	@Override
+	public void getUserConversations(User user, Callback<List<Conversation>> cb){
+		cb.onResponse(new ArrayList<Conversation>());
+	}
 }

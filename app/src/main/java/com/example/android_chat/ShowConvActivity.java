@@ -133,9 +133,6 @@ public class ShowConvActivity extends CommonActivity implements View.OnClickList
         layoutManager = new LinearLayoutManager(this);
         messageList.setLayoutManager(layoutManager);
     
-        getSupportActionBar().setTitle(conversation.getTheme());
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        
         // Retrieve the conversation
         {
             final Intent intent = getIntent();
@@ -150,7 +147,10 @@ public class ShowConvActivity extends CommonActivity implements View.OnClickList
         
         timer = new Timer();
         handler = new Handler();
-        
+    
+        getSupportActionBar().setTitle(conversation.getTheme());
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+    
         // Load the messages
         reloadMessages();
     }
@@ -302,8 +302,14 @@ public class ShowConvActivity extends CommonActivity implements View.OnClickList
         });
     }
     
+    private void visitProfile(User user){
+        final Intent intent = new Intent(this, ProfileActivity.class);
+        intent.putExtra("user.id", user.getId());
+        startActivity(intent);
+    }
+    
     void onMessageLongClick(final Message msg){
-        final String [] options = {getResources().getString(R.string.actShowConv_action_delete)};
+        final String [] options = {getResources().getString(R.string.actShowConv_action_show_profile), getResources().getString(R.string.actShowConv_action_delete)};
     
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle(getResources().getString(R.string.actShowConv_action_title));
@@ -312,6 +318,15 @@ public class ShowConvActivity extends CommonActivity implements View.OnClickList
             public void onClick(DialogInterface dialog, int which){
                 switch(which){
                     case 0:
+                        if( msg.getAuthor() == null ){
+                            gs.alerter(getResources().getString(R.string.actShowConv_no_profile));
+                            return;
+                        }
+                        
+                        visitProfile(msg.getAuthor());
+                        break;
+                        
+                    case 1:
                         askToDeleteMessage(msg);
                         break;
                 }

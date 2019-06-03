@@ -100,4 +100,9 @@
     <string name="err_no_response">aucune réponse reçue</string>
     <string name="err_name_taken">pseudo déjà utilisé</string>
     <string name="err_conv_exists">une conversation avec ce thème existe déjà</string>
+    <string name="err_get_profile">Impossible de récupérer le profil</string>
+    <string name="actShowConv_action_show_profile">Voir Profil</string>
+    <string name="actShowConv_no_profile">Cet utilisateur a supprimé son profil</string>
+    <string name="actProfile_active_in">Vu dans ces conversations</string>
+    <string name="actProfile_title">Voir Profil</string>
 </resources>

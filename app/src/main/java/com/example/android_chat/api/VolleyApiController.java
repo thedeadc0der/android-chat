@@ -465,6 +465,40 @@ public class VolleyApiController implements ApiController {
         });
     }
     
+    @Override
+    public void getUserConversations(final User user, final Callback<List<Conversation>> cb){
+        makeJsonObjectRequest(Request.Method.GET, "user/" + user.getId(), null, getStandardHeaders(), new RequestCallback<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject obj){
+                try {
+                    List<Conversation> result = new ArrayList<>();
+                    user.setPseudo(obj.getString("pseudo"));
+                    user.setColor(new Color(obj.getString("couleur")));
+                    
+                    JSONArray jsonConversations = obj.getJSONArray("conversations");
+                    for(int i=0; i < jsonConversations.length(); ++i){
+                        JSONObject jsonConv = jsonConversations.getJSONObject(i);
+                        result.add(new Conversation(
+                                jsonConv.getInt("id"),
+                                jsonConv.getString("theme"),
+                                jsonConv.getInt("active") == 1,
+                                "")
+                        );
+                    }
+                    
+                    cb.onResponse(result);
+                } catch(JSONException ex){
+                    cb.onError(new Error(resources.getString(R.string.err_bad_json)));
+                }
+            }
+    
+            @Override
+            public void onError(Throwable exc){
+                cb.onError(new Error(resources.getString(R.string.err_get_profile)));
+            }
+        });
+    }
+    
     private interface RequestCallback<T> {
         void onResponse(T obj);
         void onError(Throwable exc);
