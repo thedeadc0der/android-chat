@@ -1,11 +1,14 @@
 package com.example.android_chat;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -105,6 +108,9 @@ class ConversationMessageAdapter extends RecyclerView.Adapter<ConversationMessag
 }
 
 public class ShowConvActivity extends CommonActivity implements View.OnClickListener {
+    private static final int REFRESH_DELAY = 1000 * 5;
+    private static final int VIBRATION_TIME_MS = 500;
+    
     private RecyclerView messageList;
     private EditText messageText;
     private Button sendButton;
@@ -171,7 +177,7 @@ public class ShowConvActivity extends CommonActivity implements View.OnClickList
                     }
                 });
             }
-        }, 1000 * 5, 1000 * 5);
+        }, REFRESH_DELAY, REFRESH_DELAY);
     }
     
     @Override
@@ -306,6 +312,11 @@ public class ShowConvActivity extends CommonActivity implements View.OnClickList
         final Intent intent = new Intent(this, ProfileActivity.class);
         intent.putExtra("user.id", user.getId());
         startActivity(intent);
+    }
+    
+    private void signalNewMessages(){
+        Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+        vibrator.vibrate(VIBRATION_TIME_MS);
     }
     
     void onMessageLongClick(final Message msg){
