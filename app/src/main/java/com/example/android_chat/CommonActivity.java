@@ -31,6 +31,15 @@ public class CommonActivity extends AppCompatActivity {
 			case R.id.action_account:
 				startActivity(new Intent(this, MyAccountActivity.class));
 				break;
+				
+			case R.id.action_profile:
+				if( gs.getApiController().getCurrentUser() == null )
+					break;
+				
+				Intent intent = new Intent(this, ProfileActivity.class);
+				intent.putExtra("user.id", gs.getApiController().getCurrentUser().getId());
+				startActivity(intent);
+				break;
 		}
 		
 		return super.onOptionsItemSelected(item);

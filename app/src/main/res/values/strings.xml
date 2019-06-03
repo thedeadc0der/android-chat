@@ -105,4 +105,5 @@
     <string name="actShowConv_no_profile">Cet utilisateur a supprimé son profil</string>
     <string name="actProfile_active_in">Vu dans ces conversations</string>
     <string name="actProfile_title">Voir Profil</string>
+    <string name="action_profile">Mon Profil</string>
 </resources>
