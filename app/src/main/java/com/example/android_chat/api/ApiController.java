@@ -8,7 +8,7 @@ import com.example.android_chat.model.User;
 import java.util.List;
 
 public interface ApiController {
-	public interface Callback<T> {
+	interface Callback<T> {
 		void onResponse(T obj);
 		void onError(Error err);
 	}
