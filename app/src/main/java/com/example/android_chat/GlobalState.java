@@ -1,13 +1,9 @@
 package com.example.android_chat;
 
-import android.app.AlertDialog;
 import android.app.Application;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
-import android.net.Network;
-import android.net.NetworkCapabilities;
 import android.net.NetworkInfo;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -17,10 +13,7 @@ import com.example.android_chat.api.ApiController;
 import com.example.android_chat.api.MockApiController;
 import com.example.android_chat.api.VolleyApiController;
 
-import java.net.CookieHandler;
-import java.net.CookieManager;
-
-public class GlobalState extends Application implements SharedPreferences.OnSharedPreferenceChangeListener {
+public class GlobalState extends Application  {
 	private final String DEFAULT_API_URL = "http://10.0.2.2:5000/";
 	public final String CAT = "GroveChat";
 	
@@ -29,11 +22,10 @@ public class GlobalState extends Application implements SharedPreferences.OnShar
 	@Override
 	public void onCreate(){
 		super.onCreate();
-		PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(this);
-		createApiController();
+		recreateApiController();
 	}
 	
-	private void createApiController(){
+	public void recreateApiController(){
 		SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
 		
 		if( sharedPrefs.getBoolean("mockApi", false) ){
@@ -92,37 +84,6 @@ public class GlobalState extends Application implements SharedPreferences.OnShar
 	
 	public ApiController getApiController(){
 		return apiController;
-	}
-	
-	@Override
-	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key){
-		System.err.println("pref changed: " + key);
-		
-		if( key.equals("mockApi") ){
-			AlertDialog.Builder builder = new AlertDialog.Builder(this);
-			builder.setTitle(getResources().getString(R.string.global_mock_changed));
-			builder.setMessage(getResources().getString(R.string.global_restart_needed));
-			builder.setOnCancelListener(new DialogInterface.OnCancelListener() {
-				@Override
-				public void onCancel(DialogInterface dialog){
-					createApiController();
-					restartApp();
-				}
-			});
-			builder.create().show();
-		} else if( key.equals("urlData") ){
-			AlertDialog.Builder builder = new AlertDialog.Builder(this);
-			builder.setTitle(getResources().getString(R.string.global_url_changed));
-			builder.setMessage(getResources().getString(R.string.global_restart_needed));
-			builder.setOnCancelListener(new DialogInterface.OnCancelListener() {
-				@Override
-				public void onCancel(DialogInterface dialog){
-					createApiController();
-					restartApp();
-				}
-			});
-			builder.create().show();
-		}
 	}
 	
 	public void restartApp(){
