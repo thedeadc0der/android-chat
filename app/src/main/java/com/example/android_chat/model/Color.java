@@ -23,8 +23,13 @@ public class Color {
 		return blue | (green << 8) | (red << 16) | 0xFF000000;
 	}
 	
+	static private String componentToString(int v){
+		final String result = Integer.toHexString(v);
+		return result.length() == 2 ? result : "0" + result;
+	}
+	
 	public String toColorString(){
-		return "#" + Integer.toHexString(red) + Integer.toHexString(green) + Integer.toHexString(blue);
+		return "#" + componentToString(red) + componentToString(green) + componentToString(blue);
 	}
 	
 	public static Color makeRandom(){
