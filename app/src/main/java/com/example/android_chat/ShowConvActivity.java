@@ -44,12 +44,16 @@ class ConversationMessageAdapter extends RecyclerView.Adapter<ConversationMessag
         public void setMessage(Message msg, boolean isFromUser){
             final Resources r = itemView.getContext().getResources();
             
+            // Display the message data
             authorText.setText(msg.getAuthor() != null ? msg.getAuthor().getPseudo() : r.getString(R.string.actShowConv_deleted_user));
             contentText.setText(msg.getContent());
+            
+            // Display the user's messages in a different color
             cardView.setCardBackgroundColor(r.getColor(isFromUser ? R.color.colorPrimaryDark : R.color.blanc));
             authorText.setTextColor(r.getColor(isFromUser ? R.color.blanc : R.color.title));
             contentText.setTextColor(r.getColor(isFromUser ? R.color.blanc : R.color.text));
             
+            // Display a band of the author's color
             if( msg.getAuthor() != null ){
                 userColor.setVisibility(View.VISIBLE);
                 userColor.setBackgroundColor(msg.getAuthor().getColor().toColorCode());
@@ -108,10 +112,10 @@ public class ShowConvActivity extends CommonActivity implements View.OnClickList
     private ConversationMessageAdapter adapter;
     private RecyclerView.LayoutManager layoutManager;
     
+    private User user;
     private Conversation conversation;
     private List<Message> messages;
-    private User user;
-    private Message lastMessage;
+    
     private Timer timer;
     private Handler handler;
     
@@ -128,13 +132,19 @@ public class ShowConvActivity extends CommonActivity implements View.OnClickList
     
         layoutManager = new LinearLayoutManager(this);
         messageList.setLayoutManager(layoutManager);
+    
+        getSupportActionBar().setTitle(conversation.getTheme());
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         
         // Retrieve the conversation
-        final Intent intent = getIntent();
-        final int id = intent.getIntExtra("conversation.id", 0);
-        final String theme = intent.getStringExtra("conversation.theme");
-        final boolean active = intent.getBooleanExtra("conversation.active", false);
-        conversation = new Conversation(id, theme, active, null);
+        {
+            final Intent intent = getIntent();
+            final int id = intent.getIntExtra("conversation.id", 0);
+            final String theme = intent.getStringExtra("conversation.theme");
+            final boolean active = intent.getBooleanExtra("conversation.active", false);
+            conversation = new Conversation(id, theme, active, null);
+        }
+        
         user = gs.getApiController().getCurrentUser();
         messages = new ArrayList<>();
         
@@ -142,8 +152,6 @@ public class ShowConvActivity extends CommonActivity implements View.OnClickList
         handler = new Handler();
         
         // Load the messages
-        getSupportActionBar().setTitle(conversation.getTheme());
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         reloadMessages();
     }
     
@@ -181,7 +189,6 @@ public class ShowConvActivity extends CommonActivity implements View.OnClickList
                     @Override
                     public void run(){
                         messages = new ArrayList<>(obj);
-                        lastMessage = obj.isEmpty() ? null : obj.get(obj.size() - 1);
                         adapter = new ConversationMessageAdapter(ShowConvActivity.this, messages, user);
                         adapter.setHasStableIds(true);
                         messageList.setAdapter(adapter);
@@ -198,18 +205,20 @@ public class ShowConvActivity extends CommonActivity implements View.OnClickList
     }
     
     private void addMessage(Message msg){
-        lastMessage = msg;
         messages.add(msg);
         adapter.notifyDataSetChanged();
         messageList.smoothScrollToPosition(messages.size() - 1);
     }
     
     private void retrieveNewMessages(){
-        if( lastMessage == null ){
+        // If we don't have any messages, we can't give the "last" message's id so we just reload the whole thing.
+        if( messages.isEmpty() ){
             reloadMessages();
             return;
         }
         
+        //
+        final Message lastMessage = messages.get(messages.size() - 1);
         gs.getApiController().listMessagesFrom(conversation, lastMessage, new ApiController.Callback<List<Message>>() {
             @Override
             public void onResponse(final List<Message> msg){
@@ -218,7 +227,6 @@ public class ShowConvActivity extends CommonActivity implements View.OnClickList
                     public void run(){
                         if( !msg.isEmpty() ){
                             messages.addAll(msg);
-                            lastMessage = messages.get(messages.size() - 1);
                             adapter.notifyDataSetChanged();
                             messageList.smoothScrollToPosition(messages.size() - 1);
                         }
