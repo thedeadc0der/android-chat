@@ -31,12 +31,14 @@ class ConversationMessageAdapter extends RecyclerView.Adapter<ConversationMessag
         private CardView cardView;
         private TextView authorText;
         private TextView contentText;
+        private View userColor;
         
         public CMViewHolder(View itemView){
             super(itemView);
             cardView = (CardView) itemView;
             authorText = itemView.findViewById(R.id.message_author);
             contentText = itemView.findViewById(R.id.message_content);
+            userColor = itemView.findViewById(R.id.message_color);
         }
         
         public void setMessage(Message msg, boolean isFromUser){
@@ -47,6 +49,13 @@ class ConversationMessageAdapter extends RecyclerView.Adapter<ConversationMessag
             cardView.setCardBackgroundColor(r.getColor(isFromUser ? R.color.colorPrimaryDark : R.color.blanc));
             authorText.setTextColor(r.getColor(isFromUser ? R.color.blanc : R.color.title));
             contentText.setTextColor(r.getColor(isFromUser ? R.color.blanc : R.color.text));
+            
+            if( msg.getAuthor() != null ){
+                userColor.setVisibility(View.VISIBLE);
+                userColor.setBackgroundColor(msg.getAuthor().getColor().toColorCode());
+            } else {
+                userColor.setVisibility(View.GONE);
+            }
         }
     }
     
@@ -283,8 +292,6 @@ public class ShowConvActivity extends CommonActivity implements View.OnClickList
                 gs.presentError(err);
             }
         });
-    
-    
     }
     
     void onMessageLongClick(final Message msg){

@@ -10,6 +10,12 @@
     app:cardCornerRadius="4dp"
     app:cardElevation="4dp">
 
+    <View
+        android:id="@+id/message_color"
+        android:layout_width="wrap_content"
+        android:layout_height="4dp"
+        android:background="#FFEB3B" />
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
