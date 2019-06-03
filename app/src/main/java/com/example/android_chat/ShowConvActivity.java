@@ -145,7 +145,6 @@ public class ShowConvActivity extends CommonActivity implements View.OnClickList
         user = gs.getApiController().getCurrentUser();
         messages = new ArrayList<>();
         
-        timer = new Timer();
         handler = new Handler();
     
         getSupportActionBar().setTitle(conversation.getTheme());
@@ -161,6 +160,7 @@ public class ShowConvActivity extends CommonActivity implements View.OnClickList
         
         // We have to use a Handler so retrieveNewMessages is run on the main thread, otherwise
         // it won't be able to change UI elements reliably.
+        timer = new Timer();
         timer.schedule(new TimerTask() {
             @Override
             public void run(){
