@@ -106,4 +106,8 @@
     <string name="actProfile_active_in">Vu dans ces conversations</string>
     <string name="actProfile_title">Voir Profil</string>
     <string name="action_profile">Mon Profil</string>
+    <string name="global_restart_needed">L\'application va maintenant se relancer</string>
+    <string name="global_url_changed">L\'adresse de l\'API a changé</string>
+    <string name="global_mock_changed">L\'implémentation d\'ApiController a changé</string>
+    <string name="ok">OK</string>
 </resources>

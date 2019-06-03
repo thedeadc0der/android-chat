@@ -104,4 +104,8 @@
     <string name="actProfile_active_in">Seen in these conversations</string>
     <string name="actProfile_title">Profile</string>
     <string name="action_profile">My Profile</string>
+    <string name="global_mock_changed">The ApiController implementation has changed</string>
+    <string name="global_url_changed">The API URL has changed</string>
+    <string name="global_restart_needed">The application is going to restart</string>
+    <string name="ok">OK</string>
 </resources>

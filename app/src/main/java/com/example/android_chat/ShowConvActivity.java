@@ -223,8 +223,9 @@ public class ShowConvActivity extends CommonActivity implements View.OnClickList
             return;
         }
         
-        //
+        // If we do, then only retrieve messages past the last one.
         final Message lastMessage = messages.get(messages.size() - 1);
+        
         gs.getApiController().listMessagesFrom(conversation, lastMessage, new ApiController.Callback<List<Message>>() {
             @Override
             public void onResponse(final List<Message> msg){

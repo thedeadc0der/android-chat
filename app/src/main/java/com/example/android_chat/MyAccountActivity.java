@@ -153,9 +153,7 @@ public class MyAccountActivity extends CommonActivity implements SeekBar.OnSeekB
 		gs.getApiController().deleteUser(gs.getApiController().getCurrentUser(), new ApiController.Callback<Void>() {
 			@Override
 			public void onResponse(Void obj){
-				Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
-				intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-				startActivity(intent);
+				gs.restartApp();
 			}
 			
 			@Override
