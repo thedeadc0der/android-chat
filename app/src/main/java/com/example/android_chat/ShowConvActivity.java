@@ -233,6 +233,7 @@ public class ShowConvActivity extends CommonActivity implements View.OnClickList
                     @Override
                     public void run(){
                         if( !msg.isEmpty() ){
+                            signalNewMessages();
                             messages.addAll(msg);
                             adapter.notifyDataSetChanged();
                             messageList.smoothScrollToPosition(messages.size() - 1);
