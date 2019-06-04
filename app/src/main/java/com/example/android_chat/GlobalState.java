@@ -32,7 +32,6 @@ public class GlobalState extends Application  {
 			apiController = new MockApiController(getApplicationContext());
 		} else {
 			final String apiBase = sharedPrefs.getString("urlData", DEFAULT_API_URL);
-			alerter("Using API on " + apiBase);
 			apiController = new VolleyApiController(getApplicationContext(), apiBase);
 		}
 	}
