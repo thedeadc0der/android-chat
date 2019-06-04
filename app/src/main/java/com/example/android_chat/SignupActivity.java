@@ -7,6 +7,7 @@ import android.widget.EditText;
 
 import com.example.android_chat.api.ApiController;
 
+/** Activité d'inscription */
 public class SignupActivity extends CommonActivity implements View.OnClickListener {
 	private EditText loginField;
 	private EditText passField;

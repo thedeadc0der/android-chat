@@ -1,12 +1,10 @@
 package com.example.android_chat;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -16,6 +14,7 @@ import com.example.android_chat.model.User;
 
 import java.util.List;
 
+/** Activité de visualisation d'un profil utilisateur. */
 public class ProfileActivity extends CommonActivity implements AdapterView.OnItemClickListener {
 	private User user;
 	private List<Conversation> conversations;
@@ -59,6 +58,11 @@ public class ProfileActivity extends CommonActivity implements AdapterView.OnIte
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 	}
 	
+	/**
+	 * Affiche les détails donnés dans les vues.
+	 * @param user L'utilisateur dont c'est le profil.
+	 * @param conversations La liste des conversations où il participe.
+	 */
 	private void setProfile(User user, List<Conversation> conversations){
 		this.user = user;
 		this.conversations = conversations;

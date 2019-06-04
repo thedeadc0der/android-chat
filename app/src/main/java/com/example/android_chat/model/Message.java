@@ -1,10 +1,19 @@
 package com.example.android_chat.model;
 
+/**
+ * Représente un message.
+ */
 public class Message {
 	private int id;
 	private User author;
 	private String content;
 	
+	/**
+	 * Constructeur par données
+	 * @param id ID du message dans l'API.
+	 * @param author Utilisateur qui a écrit le message.
+	 * @param content Contenu du message.
+	 */
 	public Message(int id, User author, String content){
 		this.id = id;
 		this.author = author;

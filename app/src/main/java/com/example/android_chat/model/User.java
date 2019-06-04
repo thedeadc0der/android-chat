@@ -1,11 +1,21 @@
 package com.example.android_chat.model;
 
+/**
+ * Représente un utilisateur.
+ */
 public class User {
 	private int id;
 	private String pseudo;
 	private Color color;
 	private boolean admin;
 	
+	/**
+	 * Constructeur par données.
+	 * @param id ID de l'utilisateur dans l'API.
+	 * @param pseudo Pseudo de l'utilisateur.
+	 * @param color Couleur de l'utilisateur.
+	 * @param admin Indique si l'utilisateur est administrateur.
+	 */
 	public User(int id, String pseudo, Color color, boolean admin){
 		this.id = id;
 		this.pseudo = pseudo;
@@ -13,6 +23,13 @@ public class User {
 		this.admin = admin;
 	}
 	
+	/**
+	 * Constructeur par données (couleur en chaîne).
+	 * @param id ID de l'utilisateur dans l'API.
+	 * @param pseudo Pseudo de l'utilisateur.
+	 * @param color Couleur de l'utilisateur sous la forme #RRGGBB.
+	 * @param admin Indique si l'utilisateur est administrateur.
+	 */
 	public User(int id, String pseudo, String color, boolean admin){
 		this(id, pseudo, new Color(color), admin);
 	}

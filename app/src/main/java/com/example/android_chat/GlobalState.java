@@ -13,6 +13,9 @@ import com.example.android_chat.api.ApiController;
 import com.example.android_chat.api.MockApiController;
 import com.example.android_chat.api.VolleyApiController;
 
+/**
+ * Classe d'application.
+ */
 public class GlobalState extends Application  {
 	private final String DEFAULT_API_URL = "http://10.0.2.2:5000/";
 	public final String CAT = "GroveChat";
@@ -25,6 +28,9 @@ public class GlobalState extends Application  {
 		recreateApiController();
 	}
 	
+	/**
+	 * Re-crée l'ApiController en fonction des préférences.
+	 */
 	public void recreateApiController(){
 		SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
 		
@@ -48,17 +54,25 @@ public class GlobalState extends Application  {
 	}
 	
 	/**
-	 * Vérifier la connectivité réseau
-	 *
-	 * @return
+	 * Type de connection réseau.
 	 */
 	public enum NetworkType {
+		/** Non connecté */
 		None,
+		
+		/** Données mobiles */
 		MobileData,
+		
+		/** Wifi */
 		Wifi,
+		
+		/** Autre type de connection */
 		Other,
 	}
 	
+	/**
+	 * Détermine le type de la connection Internet actuellement active.
+	 */
 	public NetworkType getNetworkType(){
 		NetworkInfo netInfo = ((ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE)).getActiveNetworkInfo();
 		
@@ -77,14 +91,24 @@ public class GlobalState extends Application  {
 		}
 	}
 	
+	/**
+	 * Affiche une erreur dans un toast.
+	 * @param err L'erreur à afficher.
+	 */
 	public void presentError(Throwable err){
 		alerter(getResources().getString(R.string.error) + err.getMessage());
 	}
 	
+	/**
+	 * Récupère l'implémentation ApiController.
+	 */
 	public ApiController getApiController(){
 		return apiController;
 	}
 	
+	/**
+	 * Vide l'historique d'activités et revient à l'écran initial.
+	 */
 	public void restartApp(){
 		Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
 		intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);

@@ -6,6 +6,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
+/**
+ * Activité commune. (Presque) toutes les activités héritent de cette classe pour implémenter
+ * leur menu d'options et récupérer le GlobalState.
+ */
 public class CommonActivity extends AppCompatActivity {
 	protected GlobalState gs;
 	

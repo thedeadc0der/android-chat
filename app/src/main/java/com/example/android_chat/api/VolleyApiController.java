@@ -26,6 +26,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Implémentation d'ApiController qui communique avec l'API en utilisant Volley.
+ */
 public class VolleyApiController implements ApiController {
     private String prefixURL;
     private Resources resources;
@@ -499,11 +502,23 @@ public class VolleyApiController implements ApiController {
         });
     }
     
+    /**
+     * Interface de callback utilisée pour les requêtes.
+     * @param <T> Le type d'objet retourné.
+     */
     private interface RequestCallback<T> {
         void onResponse(T obj);
         void onError(Throwable exc);
     }
     
+    /**
+     * Effectue une requête et récupère un objet JSON.
+     * @param method Méthode HTTP utilisée.
+     * @param url URL à appeler.
+     * @param params Les paramètres à envoyer dans la requete, ou null.
+     * @param headers Les en-têtes à envoyer dans la requête.
+     * @param cb Callback.
+     */
     private void makeJsonObjectRequest(int method, String url, Map<String, String> params, final Map<String, String> headers, final RequestCallback<JSONObject> cb){
         volleyRequestQueue.add(new JsonObjectRequest(method, prefixURL + url,
                 params == null ? new JSONObject() : new JSONObject(params),
@@ -531,6 +546,13 @@ public class VolleyApiController implements ApiController {
         });
     }
     
+    /**
+     * Effectue une requête et récupère un tableau JSON.
+     * @param method Méthode HTTP utilisée.
+     * @param url URL à appeler.
+     * @param headers Les en-têtes à envoyer dans la requête.
+     * @param cb Callback.
+     */
     private void makeJsonArrayRequest(int method, String url, final Map<String, String> headers, final RequestCallback<JSONArray> cb){
         volleyRequestQueue.add(new JsonArrayRequest(method, prefixURL + url, null,
                 new Response.Listener<JSONArray>() {
@@ -557,6 +579,9 @@ public class VolleyApiController implements ApiController {
         });
     }
     
+    /**
+     * Retourne les en-têtes standard pour l'authentification.
+     */
     private Map<String, String> getStandardHeaders(){
         Map<String, String> headers = new HashMap<String, String>();
         headers.put("Content-Type", "application/json; charset=UTF-8");

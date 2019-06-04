@@ -13,6 +13,7 @@ import com.example.android_chat.api.ApiController;
 import com.example.android_chat.model.Color;
 import com.example.android_chat.model.User;
 
+/** Activité pour modifier son compte */
 public class MyAccountActivity extends CommonActivity implements SeekBar.OnSeekBarChangeListener, View.OnClickListener {
 	private EditText loginEdit;
 	private SeekBar colorRed;
@@ -22,6 +23,9 @@ public class MyAccountActivity extends CommonActivity implements SeekBar.OnSeekB
 	private Button saveButton;
 	private Button deleteButton;
 	
+	/**
+	 * Assigne la bande de couleur à la couleur représentée par les sliders RGB.
+	 */
 	private void updateColor(){
 		Color color = new Color();
 		color.red = colorRed.getProgress();
@@ -30,6 +34,9 @@ public class MyAccountActivity extends CommonActivity implements SeekBar.OnSeekB
 		colorView.setBackgroundColor(color.toColorCode());
 	}
 	
+	/**
+	 * Récupère la couleur entrée sur les sliders RGB.
+	 */
 	private Color getColor(){
 		final Color result = new Color();
 		result.red = colorRed.getProgress();
@@ -38,6 +45,10 @@ public class MyAccountActivity extends CommonActivity implements SeekBar.OnSeekB
 		return result;
 	}
 	
+	/**
+	 * Assigne les sliders et la bande de couleur à la couleur donnée.
+	 * @param c La couleur à afficher.
+	 */
 	private void setColor(Color c){
 		colorRed.setProgress(c.red);
 		colorGreen.setProgress(c.green);
@@ -149,6 +160,9 @@ public class MyAccountActivity extends CommonActivity implements SeekBar.OnSeekB
 	public void onStopTrackingTouch(SeekBar seekBar){
 	}
 	
+	/**
+	 * Effectue la suppression du compte utilisateur.
+	 */
 	private void deleteAccount(){
 		gs.getApiController().deleteUser(gs.getApiController().getCurrentUser(), new ApiController.Callback<Void>() {
 			@Override

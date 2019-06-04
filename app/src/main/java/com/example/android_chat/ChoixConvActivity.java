@@ -14,6 +14,7 @@ import com.example.android_chat.model.Conversation;
 
 import java.util.List;
 
+/** Activité de sélection d'une conversation */
 public class ChoixConvActivity extends CommonActivity implements AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener, View.OnClickListener {
     private List<Conversation> conversations;
     private ListView conversationList;
@@ -40,6 +41,9 @@ public class ChoixConvActivity extends CommonActivity implements AdapterView.OnI
 		reloadConversationList();
 	}
 	
+	/**
+	 * Recharge la totalité des messages de la conversation.
+	 */
 	private void reloadConversationList(){
 	    gs.getApiController().listConversations(new ApiController.Callback<List<Conversation>>() {
 		    @Override
@@ -54,8 +58,12 @@ public class ChoixConvActivity extends CommonActivity implements AdapterView.OnI
 		    }
 	    });
     }
-    
-    private void askToDeleteConversation(final Conversation conversation){
+	
+	/**
+	 * Affiche le dialogue de confirmation de suppression d'une conversation.
+	 * @param conversation La conversation à supprimer.
+	 */
+	private void askToDeleteConversation(final Conversation conversation){
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle(getResources().getString(R.string.actConvList_delete_title));
         builder.setMessage(String.format(getResources().getString(R.string.actConvList_delete_message), conversation.getTheme()));
@@ -68,8 +76,12 @@ public class ChoixConvActivity extends CommonActivity implements AdapterView.OnI
         });
         builder.create().show();
     }
-    
-    private void deleteConversation(Conversation conversation){
+	
+	/**
+	 * Effectue la suppression d'une conversation.
+	 * @param conversation La conversation à supprimer.
+	 */
+	private void deleteConversation(Conversation conversation){
         gs.getApiController().deleteConversation(conversation, new ApiController.Callback<Void>() {
 	        @Override
 	        public void onResponse(Void obj){

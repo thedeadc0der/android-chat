@@ -13,6 +13,7 @@ import android.widget.TextView;
 import com.example.android_chat.api.ApiController;
 import com.example.android_chat.api.MockApiController;
 
+/** Activité de connection */
 public class LoginActivity extends CommonActivity implements View.OnClickListener {
     private TextView networkLabel;
     private TextView usesMockApiCtrlLabel;

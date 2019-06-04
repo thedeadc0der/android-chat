@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
@@ -29,7 +28,11 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
+/**
+ * Adapteur RecyclerView pour afficher les messages.
+ */
 class ConversationMessageAdapter extends RecyclerView.Adapter<ConversationMessageAdapter.CMViewHolder> {
+    /** ViewHolder utilisé par cet Adapter */
     public static class CMViewHolder extends RecyclerView.ViewHolder {
         private CardView cardView;
         private TextView authorText;
@@ -43,7 +46,12 @@ class ConversationMessageAdapter extends RecyclerView.Adapter<ConversationMessag
             contentText = itemView.findViewById(R.id.message_content);
             userColor = itemView.findViewById(R.id.message_color);
         }
-        
+    
+        /**
+         * Affiche le message donné dans la vue du ViewHolder
+         * @param msg Message à afficher
+         * @param isFromUser true si c'est un message envoyé par notre utilisateur, false sinon.
+         */
         public void setMessage(Message msg, boolean isFromUser){
             final Resources r = itemView.getContext().getResources();
             
@@ -70,6 +78,12 @@ class ConversationMessageAdapter extends RecyclerView.Adapter<ConversationMessag
     private List<Message> messages;
     private User user;
     
+    /**
+     * Constructeur.
+     * @param activity Activité parent de RecyclerView.
+     * @param messages Les messages à afficher.
+     * @param user L'utilisateur actuellement connecté.
+     */
     public ConversationMessageAdapter(ShowConvActivity activity, List<Message> messages, User user){
         this.activity = activity;
         this.messages = messages;
@@ -107,6 +121,7 @@ class ConversationMessageAdapter extends RecyclerView.Adapter<ConversationMessag
     }
 }
 
+/** Activité de visualisation d'une conversation */
 public class ShowConvActivity extends CommonActivity implements View.OnClickListener {
     private static final int REFRESH_DELAY = 1000 * 5;
     private static final int VIBRATION_TIME_MS = 500;
@@ -187,6 +202,9 @@ public class ShowConvActivity extends CommonActivity implements View.OnClickList
         timer.purge();
     }
     
+    /**
+     * Recharge l'intégralité des messages de la conversation.
+     */
     private void reloadMessages(){
         gs.getApiController().listMessages(conversation, new ApiController.Callback<List<Message>>() {
             @Override
@@ -210,12 +228,19 @@ public class ShowConvActivity extends CommonActivity implements View.OnClickList
         });
     }
     
+    /**
+     * Ajoute le message donné à la RecyclerView.
+     * @param msg Le message à ajouter.
+     */
     private void addMessage(Message msg){
         messages.add(msg);
         adapter.notifyDataSetChanged();
         messageList.smoothScrollToPosition(messages.size() - 1);
     }
     
+    /**
+     * Récupère les nouveaux messages qui ne sont pas encore affichés.
+     */
     private void retrieveNewMessages(){
         // If we don't have any messages, we can't give the "last" message's id so we just reload the whole thing.
         if( messages.isEmpty() ){
@@ -249,6 +274,10 @@ public class ShowConvActivity extends CommonActivity implements View.OnClickList
         });
     }
     
+    /**
+     * Affiche le dialogue de confirmation de suppression d'un message.
+     * @param msg Le message à supprimer.
+     */
     private void askToDeleteMessage(final Message msg){
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle(getResources().getString(R.string.actShowConv_delete_title));
@@ -263,6 +292,10 @@ public class ShowConvActivity extends CommonActivity implements View.OnClickList
         builder.create().show();
     }
     
+    /**
+     * Effectue la suppression d'un message.
+     * @param msg Le message à supprimer.
+     */
     private void deleteMessage(final Message msg){
         gs.getApiController().deleteMessage(msg, new ApiController.Callback<Void>() {
             @Override
@@ -283,6 +316,9 @@ public class ShowConvActivity extends CommonActivity implements View.OnClickList
         });
     }
     
+    /**
+     * Envoie le message entré dans le champ de texte, s'il est valide.
+     */
     private void sendMessage(){
         final String content = messageText.getText().toString().trim();
     
@@ -310,17 +346,28 @@ public class ShowConvActivity extends CommonActivity implements View.OnClickList
         });
     }
     
+    /**
+     * Ouvre le profil de l'utilisateur donné.
+     * @param user L'utilisateur dont on veut afficher le profil.
+     */
     private void visitProfile(User user){
         final Intent intent = new Intent(this, ProfileActivity.class);
         intent.putExtra("user.id", user.getId());
         startActivity(intent);
     }
     
+    /**
+     * Déclenche le vibreur pour signaler qu'un nouveau message est disponible.
+     */
     private void signalNewMessages(){
         Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
         vibrator.vibrate(VIBRATION_TIME_MS);
     }
     
+    /**
+     * Appelé par l'Adapter quand l'utilisateur effectue un clic long sur l'un des messages.
+     * @param msg
+     */
     void onMessageLongClick(final Message msg){
         final String [] options = {getResources().getString(R.string.actShowConv_action_show_profile), getResources().getString(R.string.actShowConv_action_delete)};
     

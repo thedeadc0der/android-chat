@@ -11,6 +11,7 @@ import com.example.android_chat.model.Conversation;
 
 import java.util.List;
 
+/** Adapter pour ListView pour afficher une liste de conversations */
 public class ConversationListAdapter extends ArrayAdapter {
 	private List<Conversation> conversations;
 	private Activity activity;

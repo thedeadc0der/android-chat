@@ -12,6 +12,9 @@ import com.example.android_chat.model.User;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Une implémentation de ApiController qui utilise des données statiques.
+ */
 public class MockApiController implements ApiController {
 	private Resources resources;
 	private List<User> users;
@@ -25,6 +28,9 @@ public class MockApiController implements ApiController {
 		populateData();
 	}
 	
+	/**
+	 * Crée les données statiques.
+	 */
 	private void populateData(){
 		users = new ArrayList<>();
 		users.add(new User(1, "jessy", Color.makeRandom(), true));
